@@ -1,10 +1,12 @@
 ﻿using Catalog.Application.Features.Movie.Commands;
 using Catalog.Application.Features.Movie.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MoviesController : ControllerBase
