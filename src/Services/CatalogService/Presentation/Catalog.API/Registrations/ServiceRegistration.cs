@@ -1,0 +1,21 @@
+﻿using Catalog.Application.Interfaces.Repositories;
+using Catalog.Application.Interfaces.Services;
+using Catalog.Persistence.Repositories;
+using Catalog.Persistence.Services;
+
+namespace Catalog.API.Registrations
+{
+    public static class ServiceRegistration
+    {
+        public static void PresentationService(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IFileService, FileService>();
+        }
+    }
+}
