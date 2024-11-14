@@ -1,22 +1,20 @@
+using Elastic.Clients.Elasticsearch;
+using Filter.API.Consumers;
+using Filter.API.Services;
 using MassTransit;
-using Microsoft.Extensions.Options;
-using Search.API.Consumers;
-using Search.API.Services;
-using Search.API.Settings;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<ISearchService, SearchService>();
+var settings = new ElasticsearchClientSettings(new Uri(builder.Configuration["Elasticsearch:Uri"] ?? ""))
+    .DefaultIndex(builder.Configuration["Elasticsearch:Index"] ?? "");
+var client = new ElasticsearchClient(settings);
 
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+builder.Services.AddSingleton(client);
 
-builder.Services.AddScoped<IDatabaseSettings>(options =>
-{
-    return options.GetRequiredService<IOptions<DatabaseSettings>>().Value;
-});
+builder.Services.AddScoped<IFilterService, FilterService>();
 
 builder.Services.AddMassTransit(options =>
 {
@@ -33,19 +31,19 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ReceiveEndpoint("search-movie-created", e =>
+        config.ReceiveEndpoint("filter-movie-created", endpoint =>
         {
-            e.ConfigureConsumer<MovieCreatedConsumer>(context);
+            endpoint.ConfigureConsumer<MovieCreatedConsumer>(context);
         });
 
-        config.ReceiveEndpoint("search-movie-updated", e =>
+        config.ReceiveEndpoint("filter-movie-updated", endpoint =>
         {
-            e.ConfigureConsumer<MovieUpdatedConsumer>(context);
+            endpoint.ConfigureConsumer<MovieUpdatedConsumer>(context);
         });
 
-        config.ReceiveEndpoint("search-movie-deleted", e =>
+        config.ReceiveEndpoint("filter-movie-deleted", endpoint =>
         {
-            e.ConfigureConsumer<MovieDeletedConsumer>(context);
+            endpoint.ConfigureConsumer<MovieDeletedConsumer>(context);
         });
     });
 });
