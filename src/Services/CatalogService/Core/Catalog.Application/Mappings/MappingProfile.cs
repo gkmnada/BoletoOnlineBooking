@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Boleto.Contracts.Events.MovieEvents;
 using Catalog.Application.Features.Category.Commands;
 using Catalog.Application.Features.Category.Results;
 using Catalog.Application.Features.Movie.Commands;
@@ -22,6 +23,10 @@ namespace Catalog.Application.Mappings
             CreateMap<Movie, UpdateMovieCommand>().ReverseMap();
             CreateMap<Movie, GetMoviesQueryResult>().ReverseMap();
             CreateMap<Movie, GetMovieByIdQueryResult>().ReverseMap();
+
+            CreateMap<Movie, MovieCreated>().ReverseMap();
+            CreateMap<Movie, MovieUpdated>().ReverseMap();
+            CreateMap<Movie, MovieDeleted>().ReverseMap();
         }
     }
 }

@@ -35,14 +35,14 @@ namespace Catalog.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromForm] CreateCategoryCommand command)
+        public async Task<IActionResult> CreateCategory(CreateCategoryCommand command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCategory([FromForm] UpdateCategoryCommand command)
+        public async Task<IActionResult> UpdateCategory(UpdateCategoryCommand command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);

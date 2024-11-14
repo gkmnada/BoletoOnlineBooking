@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Boleto.Contracts.Events.MovieEvents;
 using Catalog.Application.Common.Base;
 using Catalog.Application.Features.Movie.Commands;
 using Catalog.Application.Features.Movie.Validators;
 using Catalog.Application.Interfaces.Repositories;
 using Catalog.Application.Interfaces.Services;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -17,8 +19,9 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateMovieCommandHandler> _logger;
         private readonly UpdateMovieValidator _validator;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public UpdateMovieCommandHandler(IMovieRepository movieRepository, IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService, ILogger<UpdateMovieCommandHandler> logger, UpdateMovieValidator validator)
+        public UpdateMovieCommandHandler(IMovieRepository movieRepository, IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService, ILogger<UpdateMovieCommandHandler> logger, UpdateMovieValidator validator, IPublishEndpoint publishEndpoint)
         {
             _movieRepository = movieRepository;
             _unitOfWork = unitOfWork;
@@ -26,6 +29,7 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
             _fileService = fileService;
             _logger = logger;
             _validator = validator;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<BaseResponse> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -70,6 +74,7 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
                     entity.VideoURL = videoURL;
 
                     await _movieRepository.UpdateAsync(values);
+                    await _publishEndpoint.Publish(_mapper.Map<MovieUpdated>(values));
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                     return new BaseResponse

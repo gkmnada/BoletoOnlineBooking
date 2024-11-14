@@ -22,9 +22,13 @@ namespace Catalog.Persistence.Services
 
         public async Task<bool> DeleteFileAsync(string publicID)
         {
+            var isImage = publicID.Contains("boleto-images");
+            var isVideo = publicID.Contains("boleto-videos");
+
             publicID = publicID.Substring(publicID.IndexOf("v1/") + "v1/".Length);
 
             var deleteParams = new DeletionParams(publicID);
+            deleteParams.ResourceType = isImage ? ResourceType.Image : isVideo ? ResourceType.Video : ResourceType.Raw;
             var deleteResult = await _cloudinary.DestroyAsync(deleteParams);
 
             return deleteResult.Result == "ok";
