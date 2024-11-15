@@ -4,8 +4,8 @@
     {
         public string MovieID { get; set; }
         public string MovieName { get; set; }
-        public string Genre { get; set; }
-        public string Language { get; set; }
+        public List<string> Genre { get; set; }
+        public List<string> Language { get; set; }
         public string Duration { get; set; }
         public string ReleaseDate { get; set; }
         public int Rating { get; set; }

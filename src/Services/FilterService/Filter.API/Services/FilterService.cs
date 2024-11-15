@@ -25,14 +25,28 @@ namespace Filter.API.Services
                 queries.Add(new MatchQuery(new Field("movieName")) { Query = movieFilter.MovieName });
             }
 
-            if (!string.IsNullOrEmpty(movieFilter.Genre))
+            if (movieFilter.Genre != null && movieFilter.Genre.Any(x => !string.IsNullOrWhiteSpace(x)))
             {
-                queries.Add(new MatchQuery(new Field("genre")) { Query = movieFilter.Genre });
+                queries.Add(new BoolQuery
+                {
+                    Should = movieFilter.Genre
+                        .Where(genre => !string.IsNullOrWhiteSpace(genre))
+                        .Select(genre => (Query)new MatchQuery(new Field("genre")) { Query = genre })
+                        .ToList(),
+                    MinimumShouldMatch = 1
+                });
             }
 
-            if (!string.IsNullOrEmpty(movieFilter.Language))
+            if (movieFilter.Language != null && movieFilter.Language.Any(x => !string.IsNullOrWhiteSpace(x)))
             {
-                queries.Add(new MatchQuery(new Field("language")) { Query = movieFilter.Language });
+                queries.Add(new BoolQuery
+                {
+                    Should = movieFilter.Language
+                        .Where(language => !string.IsNullOrWhiteSpace(language))
+                        .Select(language => (Query)new MatchQuery(new Field("language")) { Query = language })
+                        .ToList(),
+                    MinimumShouldMatch = 1
+                });
             }
 
             var response = await _elasticClient.SearchAsync<Movie>
