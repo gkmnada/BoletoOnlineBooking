@@ -35,6 +35,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FilterService", "FilterServ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Filter.API", "src\Services\FilterService\Filter.API\Filter.API.csproj", "{BC7EFD69-ADDC-401E-84EB-A9CAD4F9EBE0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityService", "IdentityService", "{02CA22F7-90D9-4963-9EB9-88B300D52FC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "src\Services\IdentityService\Identity.API\Identity.API.csproj", "{EB3C015E-01B3-4953-9BF6-09830CA0766C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,10 @@ Global
 		{BC7EFD69-ADDC-401E-84EB-A9CAD4F9EBE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC7EFD69-ADDC-401E-84EB-A9CAD4F9EBE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC7EFD69-ADDC-401E-84EB-A9CAD4F9EBE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3C015E-01B3-4953-9BF6-09830CA0766C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3C015E-01B3-4953-9BF6-09830CA0766C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3C015E-01B3-4953-9BF6-09830CA0766C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3C015E-01B3-4953-9BF6-09830CA0766C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +97,8 @@ Global
 		{33CBEC0B-93E9-46F3-BAC6-602866310A9A} = {3A4DDEFC-2980-46AB-8D51-0FAACD8D5AA2}
 		{3504640E-C7E2-4FBC-BD0E-A624FE00B1A4} = {E7345B87-8F71-43A3-92F7-7DB071000486}
 		{BC7EFD69-ADDC-401E-84EB-A9CAD4F9EBE0} = {3504640E-C7E2-4FBC-BD0E-A624FE00B1A4}
+		{02CA22F7-90D9-4963-9EB9-88B300D52FC9} = {E7345B87-8F71-43A3-92F7-7DB071000486}
+		{EB3C015E-01B3-4953-9BF6-09830CA0766C} = {02CA22F7-90D9-4963-9EB9-88B300D52FC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D6236A76-337B-4A78-B67F-3741F2FB27B3}
