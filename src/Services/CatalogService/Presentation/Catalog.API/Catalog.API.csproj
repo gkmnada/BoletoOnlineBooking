@@ -27,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\Aspire\Boleto.ServiceDefaults\Boleto.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\..\Infrastructure\Catalog.Persistence\Catalog.Persistence.csproj" />
 	</ItemGroup>
 

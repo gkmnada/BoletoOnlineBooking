@@ -13,6 +13,7 @@ namespace Catalog.API.Registrations
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IMovieImageRepository, MovieImageRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IFileService, FileService>();

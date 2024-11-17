@@ -22,4 +22,8 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Aspire\Boleto.ServiceDefaults\Boleto.ServiceDefaults.csproj" />
+	</ItemGroup>
 </Project>

@@ -6,6 +6,8 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var settings = new ElasticsearchClientSettings(new Uri(builder.Configuration["Elasticsearch:Uri"] ?? ""))

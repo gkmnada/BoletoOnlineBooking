@@ -1,9 +1,11 @@
 ﻿using Catalog.Domain.Common.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace Catalog.Domain.Entities
 {
     public class Movie : BaseEntity
     {
+        [Key]
         public string MovieID { get; set; } = Guid.NewGuid().ToString("D");
         public string MovieName { get; set; }
         public List<string> Genre { get; set; }
@@ -17,5 +19,6 @@ namespace Catalog.Domain.Entities
         public string SlugURL { get; set; }
         public string CategoryID { get; set; }
         public Category Category { get; set; }
+        public List<MovieImage> MovieImages { get; set; }
     }
 }
