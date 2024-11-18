@@ -61,17 +61,14 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
                     };
                 }
 
-                if (request.ImageURL.Length > 0 && request.VideoURL.Length > 0)
+                if (request.ImageURL.Length > 0)
                 {
                     await _fileService.DeleteFileAsync(values.ImageURL);
-                    await _fileService.DeleteFileAsync(values.VideoURL);
 
                     var imageURL = await _fileService.UploadImageAsync(request.ImageURL);
-                    var videoURL = await _fileService.UploadVideoAsync(request.VideoURL);
 
                     var entity = _mapper.Map(request, values);
                     entity.ImageURL = imageURL;
-                    entity.VideoURL = videoURL;
 
                     await _movieRepository.UpdateAsync(values);
                     await _publishEndpoint.Publish(_mapper.Map<MovieUpdated>(values));
@@ -88,7 +85,7 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
                 return new BaseResponse
                 {
                     IsSuccess = false,
-                    Message = "Image and Video are required"
+                    Message = "Image URL is required"
                 };
             }
             catch (Exception ex)

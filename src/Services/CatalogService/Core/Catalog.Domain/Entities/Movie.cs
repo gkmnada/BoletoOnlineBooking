@@ -15,10 +15,10 @@ namespace Catalog.Domain.Entities
         public int Rating { get; set; }
         public int AudienceScore { get; set; }
         public string ImageURL { get; set; }
-        public string VideoURL { get; set; }
         public string SlugURL { get; set; }
         public string CategoryID { get; set; }
         public Category Category { get; set; }
         public List<MovieImage> MovieImages { get; set; }
+        public List<MovieDetail> MovieDetails { get; set; }
     }
 }

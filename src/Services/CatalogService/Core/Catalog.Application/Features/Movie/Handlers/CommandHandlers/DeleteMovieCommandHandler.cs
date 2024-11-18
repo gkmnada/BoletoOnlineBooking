@@ -49,7 +49,6 @@ namespace Catalog.Application.Features.Movie.Handlers.CommandHandlers
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await _fileService.DeleteFileAsync(values.ImageURL);
-                await _fileService.DeleteFileAsync(values.VideoURL);
 
                 return new BaseResponse
                 {

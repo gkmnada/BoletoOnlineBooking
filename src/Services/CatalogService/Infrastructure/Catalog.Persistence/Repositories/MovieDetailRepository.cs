@@ -4,11 +4,11 @@ using Catalog.Persistence.Context;
 
 namespace Catalog.Persistence.Repositories
 {
-    public class MovieImageRepository : GenericRepository<MovieImage>, IMovieImageRepository
+    public class MovieDetailRepository : GenericRepository<MovieDetail>, IMovieDetailRepository
     {
         private readonly ApplicationContext _context;
 
-        public MovieImageRepository(ApplicationContext context) : base(context)
+        public MovieDetailRepository(ApplicationContext context) : base(context)
         {
             _context = context;
         }

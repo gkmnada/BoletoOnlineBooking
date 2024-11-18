@@ -2,7 +2,7 @@
 
 namespace Catalog.Application.Interfaces.Repositories
 {
-    public interface IMovieImageRepository : IGenericRepository<MovieImage>
+    public interface IMovieDetailRepository : IGenericRepository<MovieDetail>
     {
     }
 }

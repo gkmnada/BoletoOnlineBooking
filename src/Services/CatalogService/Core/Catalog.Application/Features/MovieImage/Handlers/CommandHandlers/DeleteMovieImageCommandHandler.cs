@@ -37,10 +37,10 @@ namespace Catalog.Application.Features.MovieImage.Handlers.CommandHandlers
                     };
                 }
 
-                await _fileService.DeleteFileAsync(values.ImageURL);
-
                 await _movieImageRepository.DeleteAsync(values);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                await _fileService.DeleteFileAsync(values.ImageURL);
 
                 return new BaseResponse
                 {

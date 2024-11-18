@@ -7,7 +7,7 @@ namespace Catalog.Application.Features.Movie.Validators
     {
         public CreateMovieValidator()
         {
-            RuleFor(x=> x.MovieName).NotEmpty().WithMessage("Movie name is required")
+            RuleFor(x => x.MovieName).NotEmpty().WithMessage("Movie name is required")
                 .MinimumLength(3).WithMessage("Movie name must not be less than 3 characters")
                 .MaximumLength(50).WithMessage("Movie name must not be more than 50 characters");
             RuleFor(x => x.Genre).NotEmpty().WithMessage("Genre is required");
@@ -17,7 +17,6 @@ namespace Catalog.Application.Features.Movie.Validators
             RuleFor(x => x.Rating).NotEmpty().WithMessage("Rating is required");
             RuleFor(x => x.AudienceScore).NotEmpty().WithMessage("Audience score is required");
             RuleFor(x => x.ImageURL).NotEmpty().WithMessage("Image URL is required");
-            RuleFor(x => x.VideoURL).NotEmpty().WithMessage("Video URL is required");
             RuleFor(x => x.SlugURL).NotEmpty().WithMessage("Slug URL is required");
             RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Category ID is required");
         }

@@ -1,5 +1,6 @@
 ﻿using Catalog.Application.Features.Category.Validators;
 using Catalog.Application.Features.Movie.Validators;
+using Catalog.Application.Features.MovieDetail.Validators;
 using Catalog.Application.Features.MovieImage.Validators;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,9 @@ namespace Catalog.Application.Common.Extensions
 
             services.AddScoped<CreateMovieImageValidator>();
             services.AddScoped<UpdateMovieImageValidator>();
+
+            services.AddScoped<CreateMovieDetailValidator>();
+            services.AddScoped<UpdateMovieDetailValidator>();
 
             return services;
         }

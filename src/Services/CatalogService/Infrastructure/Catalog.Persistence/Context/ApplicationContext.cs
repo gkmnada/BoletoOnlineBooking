@@ -12,6 +12,7 @@ namespace Catalog.Persistence.Context
         public DbSet<Domain.Entities.Category> Categories { get; set; }
         public DbSet<Domain.Entities.Movie> Movies { get; set; }
         public DbSet<Domain.Entities.MovieImage> MovieImages { get; set; }
+        public DbSet<Domain.Entities.MovieDetail> MovieDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +30,14 @@ namespace Catalog.Persistence.Context
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieImages)
                 .HasForeignKey(x => x.MovieID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Movie - MovieDetail (One-to-Many)
+            modelBuilder.Entity<Domain.Entities.MovieDetail>()
+                .HasOne(x => x.Movie)
+                .WithMany(x => x.MovieDetails)
+                .HasForeignKey(x => x.MovieID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.AddInboxStateEntity();
             modelBuilder.AddOutboxMessageEntity();

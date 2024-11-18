@@ -11,7 +11,6 @@
         public int Rating { get; set; }
         public int AudienceScore { get; set; }
         public string ImageURL { get; set; }
-        public string VideoURL { get; set; }
         public string SlugURL { get; set; }
         public string CategoryID { get; set; }
         public bool IsActive { get; set; }

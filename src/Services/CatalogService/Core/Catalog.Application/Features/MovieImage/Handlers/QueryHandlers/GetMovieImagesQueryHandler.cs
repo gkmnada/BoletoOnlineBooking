@@ -24,7 +24,7 @@ namespace Catalog.Application.Features.MovieImage.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _movieImageRepository.ListMovieImagesAsync(request.MovieID, cancellationToken);
+                var values = await _movieImageRepository.ListByFilterAsync(x => x.MovieID == request.MovieID, cancellationToken);
                 return _mapper.Map<List<GetMovieImagesQueryResult>>(values);
             }
             catch (Exception ex)
