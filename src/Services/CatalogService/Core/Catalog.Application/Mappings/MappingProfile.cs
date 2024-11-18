@@ -4,6 +4,10 @@ using Catalog.Application.Features.Category.Commands;
 using Catalog.Application.Features.Category.Results;
 using Catalog.Application.Features.Movie.Commands;
 using Catalog.Application.Features.Movie.Results;
+using Catalog.Application.Features.MovieCast.Commands;
+using Catalog.Application.Features.MovieCast.Results;
+using Catalog.Application.Features.MovieCrew.Commands;
+using Catalog.Application.Features.MovieCrew.Results;
 using Catalog.Application.Features.MovieDetail.Commands;
 using Catalog.Application.Features.MovieDetail.Results;
 using Catalog.Application.Features.MovieImage.Commands;
@@ -43,6 +47,18 @@ namespace Catalog.Application.Mappings
             CreateMap<MovieDetail, UpdateMovieDetailCommand>().ReverseMap();
             CreateMap<MovieDetail, GetMovieDetailByMovieIdQueryResult>().ReverseMap();
             CreateMap<MovieDetail, GetMovieDetailByIdQueryResult>().ReverseMap();
+
+            // MovieCast mappings
+            CreateMap<MovieCast, CreateMovieCastCommand>().ReverseMap();
+            CreateMap<MovieCast, UpdateMovieCastCommand>().ReverseMap();
+            CreateMap<MovieCast, GetMovieCastsQueryResult>().ReverseMap();
+            CreateMap<MovieCast, GetMovieCastByIdQueryResult>().ReverseMap();
+
+            // MovieCrew mappings
+            CreateMap<MovieCrew, CreateMovieCrewCommand>().ReverseMap();
+            CreateMap<MovieCrew, UpdateMovieCrewCommand>().ReverseMap();
+            CreateMap<MovieCrew, GetMovieCrewsQueryResult>().ReverseMap();
+            CreateMap<MovieCrew, GetMovieCrewByIdQueryResult>().ReverseMap();
         }
     }
 }

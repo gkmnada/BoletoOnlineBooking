@@ -7,6 +7,7 @@ namespace Catalog.Application.Features.Category.Validators
     {
         public UpdateCategoryValidator()
         {
+            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Category ID is required");
             RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required")
                 .MinimumLength(3).WithMessage("Name must not be less than 3 characters")
                 .MaximumLength(50).WithMessage("Name must not be more than 50 characters");

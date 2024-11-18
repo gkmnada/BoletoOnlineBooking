@@ -20,5 +20,7 @@ namespace Catalog.Domain.Entities
         public Category Category { get; set; }
         public List<MovieImage> MovieImages { get; set; }
         public List<MovieDetail> MovieDetails { get; set; }
+        public List<MovieCast> MovieCasts { get; set; }
+        public List<MovieCrew> MovieCrews { get; set; }
     }
 }

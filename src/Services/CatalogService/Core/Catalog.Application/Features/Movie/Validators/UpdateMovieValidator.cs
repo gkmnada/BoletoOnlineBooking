@@ -7,6 +7,7 @@ namespace Catalog.Application.Features.Movie.Validators
     {
         public UpdateMovieValidator()
         {
+            RuleFor(x => x.MovieID).NotEmpty().WithMessage("Movie ID is required");
             RuleFor(x => x.MovieName).NotEmpty().WithMessage("Movie name is required")
                 .MinimumLength(3).WithMessage("Movie name must not be less than 3 characters")
                 .MaximumLength(50).WithMessage("Movie name must not be more than 50 characters");

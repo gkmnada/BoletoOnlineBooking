@@ -13,6 +13,8 @@ namespace Catalog.Persistence.Context
         public DbSet<Domain.Entities.Movie> Movies { get; set; }
         public DbSet<Domain.Entities.MovieImage> MovieImages { get; set; }
         public DbSet<Domain.Entities.MovieDetail> MovieDetails { get; set; }
+        public DbSet<Domain.Entities.MovieCast> MovieCasts { get; set; }
+        public DbSet<Domain.Entities.MovieCrew> MovieCrews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,20 @@ namespace Catalog.Persistence.Context
             modelBuilder.Entity<Domain.Entities.MovieDetail>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieDetails)
+                .HasForeignKey(x => x.MovieID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Movie - MovieCast (One-to-Many)
+            modelBuilder.Entity<Domain.Entities.MovieCast>()
+                .HasOne(x => x.Movie)
+                .WithMany(x => x.MovieCasts)
+                .HasForeignKey(x => x.MovieID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Movie - MovieCrew (One-to-Many)
+            modelBuilder.Entity<Domain.Entities.MovieCrew>()
+                .HasOne(x => x.Movie)
+                .WithMany(x => x.MovieCrews)
                 .HasForeignKey(x => x.MovieID)
                 .OnDelete(DeleteBehavior.Restrict);
 

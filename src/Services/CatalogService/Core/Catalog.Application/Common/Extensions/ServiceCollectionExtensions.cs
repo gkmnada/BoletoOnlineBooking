@@ -1,5 +1,7 @@
 ﻿using Catalog.Application.Features.Category.Validators;
 using Catalog.Application.Features.Movie.Validators;
+using Catalog.Application.Features.MovieCast.Validators;
+using Catalog.Application.Features.MovieCrew.Validators;
 using Catalog.Application.Features.MovieDetail.Validators;
 using Catalog.Application.Features.MovieImage.Validators;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +31,12 @@ namespace Catalog.Application.Common.Extensions
 
             services.AddScoped<CreateMovieDetailValidator>();
             services.AddScoped<UpdateMovieDetailValidator>();
+
+            services.AddScoped<CreateMovieCastValidator>();
+            services.AddScoped<UpdateMovieCastValidator>();
+
+            services.AddScoped<CreateMovieCrewValidator>();
+            services.AddScoped<UpdateMovieCrewValidator>();
 
             return services;
         }
