@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Services\CatalogService\Presentation\Catalog.API\Catalog.API.csproj" />
+    <ProjectReference Include="..\..\Services\DiscountService\Discount.API\Discount.API.csproj" />
     <ProjectReference Include="..\..\Services\FilterService\Filter.API\Filter.API.csproj" />
     <ProjectReference Include="..\..\Services\IdentityService\Identity.API\Identity.API.csproj" />
     <ProjectReference Include="..\..\Services\SearchService\Search.API\Search.API.csproj" />
