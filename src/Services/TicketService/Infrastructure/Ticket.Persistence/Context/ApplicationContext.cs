@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Ticket.Domain.Entities;
 
 namespace Ticket.Persistence.Context
@@ -9,14 +10,14 @@ namespace Ticket.Persistence.Context
         {
         }
 
-        public DbSet<Domain.Entities.Category> categories { get; set; }
-        public DbSet<Domain.Entities.Cinema> cinemas { get; set; }
-        public DbSet<Domain.Entities.City> cities { get; set; }
-        public DbSet<Domain.Entities.Hall> halls { get; set; }
-        public DbSet<Domain.Entities.MovieTicket> movie_tickets { get; set; }
-        public DbSet<Domain.Entities.Pricing> pricings { get; set; }
-        public DbSet<Domain.Entities.Seat> seats { get; set; }
-        public DbSet<Domain.Entities.Session> sessions { get; set; }
+        public DbSet<Category> categories { get; set; }
+        public DbSet<Cinema> cinemas { get; set; }
+        public DbSet<City> cities { get; set; }
+        public DbSet<Hall> halls { get; set; }
+        public DbSet<MovieTicket> movie_tickets { get; set; }
+        public DbSet<Pricing> pricings { get; set; }
+        public DbSet<Seat> seats { get; set; }
+        public DbSet<Session> sessions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -84,6 +85,10 @@ namespace Ticket.Persistence.Context
                 .WithMany(x => x.movie_tickets)
                 .HasForeignKey(x => x.seat_id)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
+            modelBuilder.AddOutboxStateEntity();
         }
     }
 }

@@ -16,12 +16,18 @@ namespace Identity.API
             new ApiResource("CatalogResource")
             {
                 Scopes = { "CatalogFullPermission", "CatalogReadOnlyPermission" }
+            },
+            new ApiResource("TicketResource")
+            {
+                Scopes = { "TicketFullPermission", "TicketReadOnlyPermission" }
             }
         };
         public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
         {
             new ApiScope("CatalogFullPermission", "Full access to catalog items"),
-            new ApiScope("CatalogReadOnlyPermission", "Read only access to catalog items")
+            new ApiScope("CatalogReadOnlyPermission", "Read only access to catalog items"),
+            new ApiScope("TicketFullPermission", "Full access to ticket items"),
+            new ApiScope("TicketReadOnlyPermission", "Read only access to ticket items")
         };
         public static IEnumerable<Client> Clients => new Client[]
         {
@@ -31,7 +37,7 @@ namespace Identity.API
                 ClientName = "Visitor Client",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = { new Secret("DuendeVisitorClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogReadOnlyPermission" }
+                AllowedScopes = { "CatalogReadOnlyPermission", "TicketReadOnlyPermission" }
             },
             new Client
             {
@@ -39,7 +45,7 @@ namespace Identity.API
                 ClientName = "Admin Client",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("DuendeAdminClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogFullPermission",
+                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile

@@ -4,7 +4,8 @@ namespace Ticket.Domain.Entities
 {
     public class Session : BaseEntity
     {
-        public DateTime session_date { get; set; }
+        public DateOnly session_date { get; set; }
+        public TimeOnly session_time { get; set; }
         public string hall_id { get; set; }
         public Hall hall { get; set; }
         public string cinema_id { get; set; }

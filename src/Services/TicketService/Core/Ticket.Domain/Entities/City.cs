@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Ticket.Domain.Common.Base;
 
 namespace Ticket.Domain.Entities
 {
-    public class City
+    public class City : BaseEntity
     {
-        [Key]
-        public int city_id { get; set; }
         public string name { get; set; }
         public List<Cinema> cinemas { get; set; }
     }
