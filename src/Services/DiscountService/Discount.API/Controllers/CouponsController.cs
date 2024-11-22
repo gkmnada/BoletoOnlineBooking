@@ -1,4 +1,4 @@
-﻿using Discount.API.Models;
+﻿using Discount.API.Dtos.Coupon;
 using Discount.API.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,19 +19,46 @@ namespace Discount.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateCoupon(CouponModel couponModel)
+        [HttpGet]
+        public async Task<IActionResult> ListCoupons()
         {
-            try
-            {
-                await _couponRepository.CreateCouponAsync(couponModel);
-                return Ok("Created Coupon");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating the coupon");
-                throw new Exception("An error occurred while processing the request", ex);
-            }
+            var response = await _couponRepository.ListCouponAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("GetCoupon/{id}")]
+        public async Task<IActionResult> GetCouponById(string id)
+        {
+            var response = await _couponRepository.GetCouponByIdAsync(id);
+            return Ok(response);
+        }
+
+        [HttpGet("GetCouponByCode/{code}")]
+        public async Task<IActionResult> GetCouponByCode(string code)
+        {
+            var response = await _couponRepository.GetCouponByCodeAsync(code);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCoupon(CreateCouponDto createCouponDto)
+        {
+            var response = await _couponRepository.CreateCouponAsync(createCouponDto);
+            return Ok(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateCoupon(UpdateCouponDto updateCouponDto)
+        {
+            var response = await _couponRepository.UpdateCouponAsync(updateCouponDto);
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCoupon(string id)
+        {
+            var response = await _couponRepository.DeleteCouponAsync(id);
+            return Ok(response);
         }
     }
 }

@@ -6,5 +6,6 @@ builder.AddProject<Projects.Filter_API>("filter-service");
 builder.AddProject<Projects.Identity_API>("identity-service");
 builder.AddProject<Projects.Ticket_API>("ticket-service");
 builder.AddProject<Projects.Discount_API>("discount-service");
+builder.AddProject<Projects.Booking_API>("booking-service");
 
 builder.Build().Run();

@@ -1,10 +1,10 @@
+using Booking.API.Clients;
+using Booking.API.Consumers;
+using Booking.API.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Ticket.API.Registrations;
-using Ticket.Application.Common.Extensions;
-using Ticket.Persistence.Context;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +12,7 @@ builder.AddServiceDefaults();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDbContext<ApplicationContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -27,17 +24,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-builder.Services.ApplicationService(builder.Configuration);
-builder.Services.PresentationService(builder.Configuration);
-
 builder.Services.AddMassTransit(options =>
 {
-    options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
-    {
-        x.QueryDelay = TimeSpan.FromSeconds(10);
-        x.UsePostgres();
-        x.UseBusOutbox();
-    });
+    options.AddConsumer<MovieTicketCreatedConsumer>();
 
     options.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
     options.UsingRabbitMq((context, config) =>
@@ -48,9 +37,15 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ConfigureEndpoints(context);
+        config.ReceiveEndpoint("booking-movie-ticket-created", endpoint =>
+        {
+            endpoint.ConfigureConsumer<MovieTicketCreatedConsumer>(context);
+        });
     });
 });
+
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<DiscountClient>();
 
 builder.Services.AddControllers();
 

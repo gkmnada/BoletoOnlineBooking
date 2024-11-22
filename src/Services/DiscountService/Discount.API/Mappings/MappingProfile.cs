@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using Discount.API.Dtos.Coupon;
 using Discount.API.Entities;
-using Discount.API.Models;
 
 namespace Discount.API.Mappings
 {
-    public class MappingProfile:Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<Coupon, CouponModel>().ReverseMap();
+            CreateMap<Coupon, CreateCouponDto>().ReverseMap();
+            CreateMap<Coupon, UpdateCouponDto>().ReverseMap();
+            CreateMap<Coupon, CouponDto>().ReverseMap();
+            CreateMap<Coupon, ListCouponDto>().ReverseMap();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Boleto.Contracts.Events.TicketEvents
+﻿namespace Booking.API.Models
 {
-    public class MovieTicketCreated
+    public class MovieTicket
     {
         public string ticket_id { get; set; }
         public string session_id { get; set; }

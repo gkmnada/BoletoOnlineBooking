@@ -1,6 +1,6 @@
-﻿namespace Discount.API.Models
+﻿namespace Discount.API.Dtos.Coupon
 {
-    public class CouponModel
+    public class CreateCouponDto
     {
         public string CouponCode { get; set; }
         public int Amount { get; set; }

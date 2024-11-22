@@ -41,7 +41,7 @@ namespace Discount.API.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting the discount");
+                _logger.LogError(ex, "An error occurred while fetching the coupon");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

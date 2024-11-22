@@ -12,6 +12,7 @@ namespace Ticket.Domain.Entities
         public Seat seat { get; set; }
         public string status { get; set; }
         public decimal price { get; set; }
-        public DateTime created_at { get; set; } = DateTime.Now;
+        public DateTime created_at { get; set; } = DateTime.UtcNow;
+        public string user_id { get; set; }
     }
 }
