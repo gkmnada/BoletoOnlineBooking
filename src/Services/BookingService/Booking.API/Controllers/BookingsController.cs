@@ -22,6 +22,20 @@ namespace Booking.API.Controllers
             var response = await _bookingService.ImplementCouponAsync(couponCode);
             return Ok(response);
         }
+
+        [HttpPost("BookingCheckout")]
+        public async Task<IActionResult> BookingCheckout()
+        {
+            var response = await _bookingService.BookingCheckoutAsync();
+            return Ok(response);
+        }
+
+        [HttpDelete("CancelCheckout")]
+        public async Task<IActionResult> CancelCheckout()
+        {
+            var response = await _bookingService.CancelCheckoutAsync();
+            return Ok(response);
+        }
     }
 
 }

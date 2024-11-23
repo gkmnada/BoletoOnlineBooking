@@ -57,7 +57,7 @@ namespace Identity.API
                 ClientName = "Admin Client",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("DuendeAdminClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission"
+                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile

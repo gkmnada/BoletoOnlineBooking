@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using Ticket.Application.Common.Base;
+using Ticket.Application.Enums.MovieTicket;
 using Ticket.Application.Features.MovieTicket.Commands;
 using Ticket.Application.Features.MovieTicket.Validators;
 using Ticket.Application.Interfaces.Repositories;
@@ -15,6 +16,7 @@ namespace Ticket.Application.Features.MovieTicket.Handlers.CommandHandlers
     public class CreateMovieTicketCommandHandler : IRequestHandler<CreateMovieTicketCommand, BaseResponse>
     {
         private readonly IMovieTicketRepository _movieTicketRepository;
+        private readonly ISessionRepository _sessionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateMovieTicketCommandHandler> _logger;
@@ -23,9 +25,10 @@ namespace Ticket.Application.Features.MovieTicket.Handlers.CommandHandlers
         private readonly CreateMovieTicketValidator _validator;
         private string _userID;
 
-        public CreateMovieTicketCommandHandler(IMovieTicketRepository movieTicketRepository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateMovieTicketCommandHandler> logger, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor, CreateMovieTicketValidator validator)
+        public CreateMovieTicketCommandHandler(IMovieTicketRepository movieTicketRepository, ISessionRepository sessionRepository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateMovieTicketCommandHandler> logger, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor, CreateMovieTicketValidator validator)
         {
             _movieTicketRepository = movieTicketRepository;
+            _sessionRepository = sessionRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
@@ -55,6 +58,10 @@ namespace Ticket.Application.Features.MovieTicket.Handlers.CommandHandlers
 
                 var entity = _mapper.Map<Domain.Entities.MovieTicket>(request);
                 entity.user_id = _userID;
+                entity.status = MovieTicketStatus.Pending.ToString();
+
+                var session = await _sessionRepository.GetSessionAsync(entity.session_id, cancellationToken);
+                entity.session = session;
 
                 await _movieTicketRepository.CreateAsync(entity);
                 await _publishEndpoint.Publish(_mapper.Map<MovieTicketCreated>(entity));

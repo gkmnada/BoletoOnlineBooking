@@ -68,7 +68,11 @@ namespace Ticket.Application.Mappings
             // MovieTicket mappings
             CreateMap<MovieTicket, CreateMovieTicketCommand>().ReverseMap();
 
-            CreateMap<MovieTicket, MovieTicketCreated>().ReverseMap();
+            CreateMap<MovieTicket, MovieTicketCreated>()
+                .ForMember(x => x.movie_id, options => options.MapFrom(z => z.session.movie_id))
+                .ForMember(x => x.cinema_id, options => options.MapFrom(z => z.session.cinema.id))
+                .ForMember(x => x.hall_id, options => options.MapFrom(z => z.session.hall.id)).ReverseMap();
+            CreateMap<MovieTicket, MovieTicketUpdated>().ReverseMap();
         }
     }
 }

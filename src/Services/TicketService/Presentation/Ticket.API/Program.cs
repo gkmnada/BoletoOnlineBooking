@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Ticket.API.Registrations;
 using Ticket.Application.Common.Extensions;
+using Ticket.Application.Consumers;
 using Ticket.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ builder.Services.PresentationService(builder.Configuration);
 
 builder.Services.AddMassTransit(options =>
 {
+    options.AddConsumer<MovieTicketUpdatedConsumer>();
+
     options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
     {
         x.QueryDelay = TimeSpan.FromSeconds(10);
@@ -46,6 +49,11 @@ builder.Services.AddMassTransit(options =>
         {
             host.Username("guest");
             host.Password("guest");
+        });
+
+        config.ReceiveEndpoint("ticket-movie-ticket-updated", e =>
+        {
+            e.ConfigureConsumer<MovieTicketUpdatedConsumer>(context);
         });
 
         config.ConfigureEndpoints(context);

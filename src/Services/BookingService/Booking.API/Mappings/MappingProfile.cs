@@ -8,7 +8,9 @@ namespace Booking.API.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<MovieTicket, Checkout>().ReverseMap();
             CreateMap<MovieTicket, MovieTicketCreated>().ReverseMap();
+            CreateMap<MovieTicket, MovieTicketUpdated>().ReverseMap();
         }
     }
 }
