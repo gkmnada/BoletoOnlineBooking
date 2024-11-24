@@ -3,7 +3,6 @@ using Booking.API.Consumers;
 using Booking.API.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,16 +16,13 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["IdentityURL"];
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = false
-    };
+    options.Audience = "BookingResource";
 });
 
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<MovieTicketCreatedConsumer>();
+    options.AddConsumer<PaymentCompletedConsumer>();
 
     options.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
     options.UsingRabbitMq((context, config) =>
@@ -41,6 +37,13 @@ builder.Services.AddMassTransit(options =>
         {
             endpoint.ConfigureConsumer<MovieTicketCreatedConsumer>(context);
         });
+
+        config.ReceiveEndpoint("booking-payment-completed", endpoint =>
+        {
+            endpoint.ConfigureConsumer<PaymentCompletedConsumer>(context);
+        });
+
+        config.ConfigureEndpoints(context);
     });
 });
 

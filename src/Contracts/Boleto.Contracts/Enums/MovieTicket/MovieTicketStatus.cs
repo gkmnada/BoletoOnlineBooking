@@ -1,4 +1,4 @@
-﻿namespace Booking.API.Enums.MovieTicket
+﻿namespace Boleto.Contracts.Enums.MovieTicket
 {
     public enum MovieTicketStatus
     {

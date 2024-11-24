@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Boleto.Contracts.Enums.MovieTicket;
 using Boleto.Contracts.Events.TicketEvents;
 using MassTransit;
 using MediatR;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using Ticket.Application.Common.Base;
-using Ticket.Application.Enums.MovieTicket;
 using Ticket.Application.Features.MovieTicket.Commands;
 using Ticket.Application.Features.MovieTicket.Validators;
 using Ticket.Application.Interfaces.Repositories;

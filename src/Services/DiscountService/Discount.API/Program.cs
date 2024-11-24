@@ -3,7 +3,6 @@ using Discount.API.Repositories;
 using Discount.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,11 +19,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["IdentityURL"];
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = false
-    };
+    options.Audience = "DiscountResource";
 });
 
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();

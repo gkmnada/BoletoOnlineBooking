@@ -4,5 +4,6 @@
     {
         public string ticket_id { get; set; }
         public string status { get; set; }
+        public decimal price { get; set; }
     }
 }

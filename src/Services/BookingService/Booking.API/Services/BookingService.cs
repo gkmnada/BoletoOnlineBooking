@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
+using Boleto.Contracts.Enums.MovieTicket;
 using Boleto.Contracts.Events.BookingEvents;
 using Boleto.Contracts.Events.TicketEvents;
 using Booking.API.Clients;
 using Booking.API.Common.Base;
-using Booking.API.Enums.MovieTicket;
 using Booking.API.Models;
 using MassTransit;
 using Newtonsoft.Json;
@@ -40,7 +40,9 @@ namespace Booking.API.Services
         {
             try
             {
-                var values = await _database.ListRangeAsync(_userID);
+                var key = $"Bookings:{_userID}";
+
+                var values = await _database.ListRangeAsync(key);
 
                 if (values.Length == 0)
                 {
@@ -58,8 +60,6 @@ namespace Booking.API.Services
                 {
                     var tasks = checkouts.Select(item => _publishEndpoint.Publish(_mapper.Map<BookingCheckout>(item)));
                     await Task.WhenAll(tasks);
-
-                    await _database.KeyDeleteAsync(_userID);
 
                     return new BaseResponse
                     {
@@ -85,8 +85,9 @@ namespace Booking.API.Services
         {
             try
             {
+                var key = $"Bookings:{_userID}";
 
-                var values = await _database.ListRangeAsync(_userID);
+                var values = await _database.ListRangeAsync(key);
 
                 if (values.Length == 0)
                 {
@@ -118,7 +119,7 @@ namespace Booking.API.Services
                 var tasks = tickets.Select(ticket => _publishEndpoint.Publish(_mapper.Map<MovieTicketUpdated>(ticket)));
                 await Task.WhenAll(tasks);
 
-                await _database.KeyDeleteAsync(_userID);
+                await _database.KeyDeleteAsync(key);
 
                 return new BaseResponse
                 {
@@ -137,6 +138,8 @@ namespace Booking.API.Services
         {
             try
             {
+                var key = $"Bookings:{_userID}";
+
                 if (string.IsNullOrWhiteSpace(couponCode))
                 {
                     return new BaseResponse
@@ -146,8 +149,8 @@ namespace Booking.API.Services
                     };
                 }
 
-                var key = $"ImplementedCoupons:{_userID}";
-                var isCouponImplemented = await _database.SetContainsAsync(key, couponCode);
+                var couponkey = $"ImplementedCoupons:{_userID}";
+                var isCouponImplemented = await _database.SetContainsAsync(couponkey, couponCode);
 
                 if (isCouponImplemented)
                 {
@@ -169,7 +172,7 @@ namespace Booking.API.Services
                     };
                 }
 
-                var values = await _database.ListLengthAsync(_userID);
+                var values = await _database.ListLengthAsync(key);
 
                 if (values == 0)
                 {
@@ -182,15 +185,15 @@ namespace Booking.API.Services
 
                 for (var index = 0; index < values; index++)
                 {
-                    var response = await _database.ListGetByIndexAsync(_userID, index);
+                    var response = await _database.ListGetByIndexAsync(key, index);
 
                     var ticket = JsonConvert.DeserializeObject<MovieTicket>(response!);
                     ticket!.price = ticket.price - (ticket.price * discount.Amount / 100);
 
-                    await _database.ListSetByIndexAsync(_userID, index, JsonConvert.SerializeObject(ticket));
+                    await _database.ListSetByIndexAsync(key, index, JsonConvert.SerializeObject(ticket));
                 }
 
-                await _database.SetAddAsync(key, couponCode);
+                await _database.SetAddAsync(couponkey, couponCode);
 
                 return new BaseResponse
                 {

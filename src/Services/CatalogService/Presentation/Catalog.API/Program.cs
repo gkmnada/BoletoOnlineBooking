@@ -4,7 +4,6 @@ using Catalog.Persistence.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +17,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["IdentityURL"];
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = false
-    };
+    options.Audience = "CatalogResource";
 });
 
 builder.Services.ApplicationService(builder.Configuration);

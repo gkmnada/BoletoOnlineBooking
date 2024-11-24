@@ -1,10 +1,8 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Ticket.API.Registrations;
-using Ticket.Application.Common.Extensions;
-using Ticket.Application.Consumers;
-using Ticket.Persistence.Context;
+using Payment.API.Consumers;
+using Payment.API.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,30 +10,17 @@ builder.AddServiceDefaults();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDbContext<ApplicationContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["IdentityURL"];
-    options.Audience = "TicketResource";
+    options.Audience = "PaymentResource";
 });
-
-builder.Services.ApplicationService(builder.Configuration);
-builder.Services.PresentationService(builder.Configuration);
 
 builder.Services.AddMassTransit(options =>
 {
-    options.AddConsumer<MovieTicketUpdatedConsumer>();
-
-    options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
-    {
-        x.QueryDelay = TimeSpan.FromSeconds(10);
-        x.UsePostgres();
-        x.UseBusOutbox();
-    });
+    options.AddConsumer<BookingCheckoutConsumer>();
 
     options.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
     options.UsingRabbitMq((context, config) =>
@@ -46,14 +31,14 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ReceiveEndpoint("ticket-movie-ticket-updated", e =>
+        config.ReceiveEndpoint("payment-booking-checkout", endpoint =>
         {
-            e.ConfigureConsumer<MovieTicketUpdatedConsumer>(context);
+            endpoint.ConfigureConsumer<BookingCheckoutConsumer>(context);
         });
-
-        config.ConfigureEndpoints(context);
     });
 });
+
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddControllers();
 

@@ -28,6 +28,10 @@ namespace Identity.API
             new ApiResource("BookingResource")
             {
                 Scopes = { "BookingFullPermission", "BookingReadOnlyPermission" }
+            },
+            new ApiResource("PaymentResource")
+            {
+                Scopes = { "PaymentFullPermission", "PaymentReadOnlyPermission" }
             }
         };
         public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
@@ -39,7 +43,9 @@ namespace Identity.API
             new ApiScope("DiscountFullPermission", "Full access to discount items"),
             new ApiScope("DiscountReadOnlyPermission", "Read only access to discount items"),
             new ApiScope("BookingFullPermission", "Full access to booking items"),
-            new ApiScope("BookingReadOnlyPermission", "Read only access to booking items")
+            new ApiScope("BookingReadOnlyPermission", "Read only access to booking items"),
+            new ApiScope("PaymentFullPermission", "Full access to payment items"),
+            new ApiScope("PaymentReadOnlyPermission", "Read only access to payment items")
         };
         public static IEnumerable<Client> Clients => new Client[]
         {
@@ -49,7 +55,7 @@ namespace Identity.API
                 ClientName = "Visitor Client",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = { new Secret("DuendeVisitorClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogReadOnlyPermission", "TicketReadOnlyPermission", "DiscountReadOnlyPermission", "BookingReadOnlyPermission" }
+                AllowedScopes = { "CatalogReadOnlyPermission", "TicketReadOnlyPermission" }
             },
             new Client
             {
@@ -57,7 +63,7 @@ namespace Identity.API
                 ClientName = "Admin Client",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("DuendeAdminClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission",
+                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission", "PaymentFullPermission",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile

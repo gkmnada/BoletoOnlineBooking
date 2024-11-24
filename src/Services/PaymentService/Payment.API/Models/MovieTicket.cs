@@ -1,4 +1,4 @@
-﻿namespace Booking.API.Models
+﻿namespace Payment.API.Models
 {
     public class MovieTicket
     {

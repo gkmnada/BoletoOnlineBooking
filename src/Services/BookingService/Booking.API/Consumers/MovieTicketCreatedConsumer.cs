@@ -27,11 +27,11 @@ namespace Booking.API.Consumers
         {
             try
             {
-                var movieTicket = _mapper.Map<MovieTicket>(context.Message);
-                var key = movieTicket.user_id;
+                var message = _mapper.Map<MovieTicket>(context.Message);
+                var key = $"Bookings:{message.user_id}";
 
-                var ticketJson = JsonConvert.SerializeObject(movieTicket);
-                await _database.ListRightPushAsync(key, ticketJson);
+                var ticket = JsonConvert.SerializeObject(message);
+                await _database.ListRightPushAsync(key, ticket);
             }
             catch (Exception ex)
             {
