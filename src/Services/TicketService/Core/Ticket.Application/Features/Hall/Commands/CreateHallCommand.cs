@@ -5,8 +5,8 @@ namespace Ticket.Application.Features.Hall.Commands
 {
     public class CreateHallCommand : IRequest<BaseResponse>
     {
-        public string name { get; set; }
-        public int capacity { get; set; }
-        public string cinema_id { get; set; }
+        public string Name { get; set; }
+        public int Capacity { get; set; }
+        public string CinemaID { get; set; }
     }
 }

@@ -5,8 +5,8 @@ namespace Ticket.Application.Features.Category.Commands
 {
     public class UpdateCategoryCommand : IRequest<BaseResponse>
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public bool is_active { get; set; }
+        public string CategoryID { get; set; }
+        public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Catalog.Domain.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Persistence.Context
@@ -9,47 +10,47 @@ namespace Catalog.Persistence.Context
         {
         }
 
-        public DbSet<Domain.Entities.Category> Categories { get; set; }
-        public DbSet<Domain.Entities.Movie> Movies { get; set; }
-        public DbSet<Domain.Entities.MovieImage> MovieImages { get; set; }
-        public DbSet<Domain.Entities.MovieDetail> MovieDetails { get; set; }
-        public DbSet<Domain.Entities.MovieCast> MovieCasts { get; set; }
-        public DbSet<Domain.Entities.MovieCrew> MovieCrews { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<MovieImage> MovieImages { get; set; }
+        public DbSet<MovieDetail> MovieDetails { get; set; }
+        public DbSet<MovieCast> MovieCasts { get; set; }
+        public DbSet<MovieCrew> MovieCrews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // Category - Movie (One-to-Many)
-            modelBuilder.Entity<Domain.Entities.Movie>()
+            modelBuilder.Entity<Movie>()
                 .HasOne(x => x.Category)
                 .WithMany(x => x.Movies)
                 .HasForeignKey(x => x.CategoryID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Movie - MovieImage (One-to-Many)
-            modelBuilder.Entity<Domain.Entities.MovieImage>()
+            modelBuilder.Entity<MovieImage>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieImages)
                 .HasForeignKey(x => x.MovieID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Movie - MovieDetail (One-to-Many)
-            modelBuilder.Entity<Domain.Entities.MovieDetail>()
+            modelBuilder.Entity<MovieDetail>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieDetails)
                 .HasForeignKey(x => x.MovieID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Movie - MovieCast (One-to-Many)
-            modelBuilder.Entity<Domain.Entities.MovieCast>()
+            modelBuilder.Entity<MovieCast>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieCasts)
                 .HasForeignKey(x => x.MovieID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Movie - MovieCrew (One-to-Many)
-            modelBuilder.Entity<Domain.Entities.MovieCrew>()
+            modelBuilder.Entity<MovieCrew>()
                 .HasOne(x => x.Movie)
                 .WithMany(x => x.MovieCrews)
                 .HasForeignKey(x => x.MovieID)

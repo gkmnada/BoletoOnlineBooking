@@ -5,6 +5,6 @@ namespace Ticket.Application.Features.Category.Commands
 {
     public class CreateCategoryCommand : IRequest<BaseResponse>
     {
-        public string name { get; set; }
+        public string Name { get; set; }
     }
 }

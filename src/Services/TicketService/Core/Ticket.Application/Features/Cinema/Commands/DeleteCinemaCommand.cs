@@ -5,11 +5,11 @@ namespace Ticket.Application.Features.Cinema.Commands
 {
     public class DeleteCinemaCommand : IRequest<BaseResponse>
     {
-        public string cinema_id { get; set; }
+        public string CinemaID { get; set; }
 
         public DeleteCinemaCommand(string id)
         {
-            cinema_id = id;
+            CinemaID = id;
         }
     }
 }

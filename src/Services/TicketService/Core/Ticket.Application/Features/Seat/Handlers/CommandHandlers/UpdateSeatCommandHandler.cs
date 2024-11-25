@@ -29,7 +29,7 @@ namespace Ticket.Application.Features.Seat.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _seatRepository.GetByIdAsync(request.id, cancellationToken);
+                var values = await _seatRepository.GetByIdAsync(request.SeatID, cancellationToken);
 
                 if (values == null)
                 {
@@ -65,7 +65,7 @@ namespace Ticket.Application.Features.Seat.Handlers.CommandHandlers
                     Message = "Seat updated successfully",
                     Data = new
                     {
-                        id = values.id
+                        SeatID = values.SeatID
                     }
                 };
             }

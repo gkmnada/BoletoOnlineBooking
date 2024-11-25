@@ -7,7 +7,7 @@ namespace Ticket.Application.Features.City.Validators
     {
         public CreateCityValidator()
         {
-            RuleFor(x => x.name).NotEmpty().WithMessage("Name is required")
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required")
                 .MinimumLength(2).WithMessage("Name must be at least 2 characters")
                 .MaximumLength(15).WithMessage("Name must not exceed 15 characters");
         }

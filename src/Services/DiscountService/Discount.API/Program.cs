@@ -1,4 +1,5 @@
 using Discount.API.Context;
+using Discount.API.Features.Coupon.Validators;
 using Discount.API.Repositories;
 using Discount.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatR(options =>
+{
+    options.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+});
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
@@ -23,6 +28,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+
+builder.Services.AddScoped<CreateCouponValidator>();
+builder.Services.AddScoped<UpdateCouponValidator>();
 
 builder.Services.AddGrpc();
 

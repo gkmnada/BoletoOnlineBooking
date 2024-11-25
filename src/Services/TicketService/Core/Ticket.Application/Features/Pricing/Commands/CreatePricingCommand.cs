@@ -5,8 +5,8 @@ namespace Ticket.Application.Features.Pricing.Commands
 {
     public class CreatePricingCommand : IRequest<BaseResponse>
     {
-        public string session_id { get; set; }
-        public string category_id { get; set; }
-        public decimal price { get; set; }
+        public string SessionID { get; set; }
+        public string CategoryID { get; set; }
+        public decimal Price { get; set; }
     }
 }

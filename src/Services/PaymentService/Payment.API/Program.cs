@@ -1,7 +1,9 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Payment.API.Consumers;
+using Payment.API.Repositories.Payment;
 using Payment.API.Services;
+using Payment.API.Settings;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,10 @@ builder.AddServiceDefaults();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatR(options =>
+{
+    options.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -39,6 +45,14 @@ builder.Services.AddMassTransit(options =>
 });
 
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+
+builder.Services.AddScoped<IDatabaseSettings>(options =>
+{
+    return options.GetRequiredService<DatabaseSettings>();
+});
 
 builder.Services.AddControllers();
 

@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.Seat.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _seatRepository.GetByIdAsync(request.seat_id, cancellationToken);
+                var values = await _seatRepository.GetByIdAsync(request.SeatID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.Seat.Handlers.CommandHandlers
                     Message = "Seat deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        SeatID = values.SeatID
                     }
                 };
             }

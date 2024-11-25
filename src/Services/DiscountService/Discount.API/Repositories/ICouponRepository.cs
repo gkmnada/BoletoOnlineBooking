@@ -1,16 +1,12 @@
-﻿using Discount.API.Common.Base;
-using Discount.API.Dtos.Coupon;
-
-namespace Discount.API.Repositories
+﻿namespace Discount.API.Repositories
 {
     public interface ICouponRepository
     {
-        Task<List<ListCouponDto>> ListCouponAsync();
-        Task<BaseResponse> CreateCouponAsync(CreateCouponDto createCouponDto);
-        Task<BaseResponse> UpdateCouponAsync(UpdateCouponDto updateCouponDto);
-        Task<BaseResponse> DeleteCouponAsync(string id);
-        Task<CouponDto> GetCouponByIdAsync(string id);
-        Task<CouponDto> GetCouponByCodeAsync(string code);
-        
+        Task<List<Entities.Coupon>> ListCouponAsync();
+        Task CreateCouponAsync(Entities.Coupon coupon);
+        Task UpdateCouponAsync(Entities.Coupon coupon);
+        Task DeleteCouponAsync(Entities.Coupon coupon);
+        Task<Entities.Coupon> GetCouponByIdAsync(string id);
+        Task<Entities.Coupon> GetCouponByCodeAsync(string code);
     }
 }

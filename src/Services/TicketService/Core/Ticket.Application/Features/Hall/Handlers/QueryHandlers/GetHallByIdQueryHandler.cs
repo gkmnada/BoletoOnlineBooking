@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Hall.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _hallRepository.GetByIdAsync(request.hall_id, cancellationToken);
+                var values = await _hallRepository.GetByIdAsync(request.HallID, cancellationToken);
                 return _mapper.Map<GetHallByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching hall by id");
+                _logger.LogError(ex, "An error occurred while fetching hall by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

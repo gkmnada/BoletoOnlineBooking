@@ -1,13 +1,16 @@
-﻿using Ticket.Domain.Common.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using Ticket.Domain.Common.Base;
 
 namespace Ticket.Domain.Entities
 {
     public class Pricing : BaseEntity
     {
-        public string session_id { get; set; }
-        public Session session { get; set; }
-        public string category_id { get; set; }
-        public Category category { get; set; }
-        public decimal price { get; set; }
+        [Key]
+        public string PricingID { get; set; } = Guid.NewGuid().ToString("D");
+        public string SessionID { get; set; }
+        public Session Session { get; set; }
+        public string CategoryID { get; set; }
+        public Category Category { get; set; }
+        public decimal Price { get; set; }
     }
 }

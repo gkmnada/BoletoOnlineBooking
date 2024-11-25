@@ -5,8 +5,8 @@ namespace Ticket.Application.Features.Cinema.Commands
 {
     public class CreateCinemaCommand : IRequest<BaseResponse>
     {
-        public string name { get; set; }
-        public string address { get; set; }
-        public string city_id { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string CityID { get; set; }
     }
 }

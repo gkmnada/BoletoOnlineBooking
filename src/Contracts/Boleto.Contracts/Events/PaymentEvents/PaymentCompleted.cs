@@ -2,6 +2,6 @@
 {
     public class PaymentCompleted
     {
-        public string user_id { get; set; }
+        public string UserID { get; set; }
     }
 }

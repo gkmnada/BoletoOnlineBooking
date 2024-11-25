@@ -2,10 +2,10 @@
 {
     public class GetHallsQueryResult
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public int capacity { get; set; }
-        public string cinema_id { get; set; }
-        public bool is_active { get; set; }
+        public string HallID { get; set; }
+        public string Name { get; set; }
+        public int Capacity { get; set; }
+        public string CinemaID { get; set; }
+        public bool IsActive { get; set; }
     }
 }

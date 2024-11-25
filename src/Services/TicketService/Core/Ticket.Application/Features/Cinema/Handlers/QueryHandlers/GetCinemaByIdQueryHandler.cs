@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Cinema.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _cinemaRepository.GetByIdAsync(request.cinema_id, cancellationToken);
+                var values = await _cinemaRepository.GetByIdAsync(request.CinemaID, cancellationToken);
                 return _mapper.Map<GetCinemaByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching cinema by id");
+                _logger.LogError(ex, "An error occurred while fetching cinema by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

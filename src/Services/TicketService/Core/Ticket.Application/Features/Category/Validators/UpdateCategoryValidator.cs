@@ -7,8 +7,8 @@ namespace Ticket.Application.Features.Category.Validators
     {
         public UpdateCategoryValidator()
         {
-            RuleFor(x => x.id).NotEmpty().WithMessage("Category ID is required");
-            RuleFor(x => x.name).NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Category ID is required");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
         }
     }
 }

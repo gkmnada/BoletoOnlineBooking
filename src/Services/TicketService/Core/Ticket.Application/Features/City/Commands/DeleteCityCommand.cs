@@ -5,11 +5,11 @@ namespace Ticket.Application.Features.City.Commands
 {
     public class DeleteCityCommand : IRequest<BaseResponse>
     {
-        public string city_id { get; set; }
+        public string CityID { get; set; }
 
         public DeleteCityCommand(string id)
         {
-            city_id = id;
+            CityID = id;
         }
     }
 }

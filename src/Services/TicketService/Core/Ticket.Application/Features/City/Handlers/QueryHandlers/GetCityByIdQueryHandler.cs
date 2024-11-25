@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.City.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _cityRepository.GetByIdAsync(request.city_id, cancellationToken);
+                var values = await _cityRepository.GetByIdAsync(request.CityID, cancellationToken);
                 return _mapper.Map<GetCityByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting city by id");
+                _logger.LogError(ex, "An error occurred while getting city by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

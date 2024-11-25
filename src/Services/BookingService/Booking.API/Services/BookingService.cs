@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Boleto.Contracts.Enums.MovieTicket;
+using Boleto.Contracts.Enums.Tickets;
 using Boleto.Contracts.Events.BookingEvents;
 using Boleto.Contracts.Events.TicketEvents;
 using Booking.API.Clients;
@@ -53,7 +53,7 @@ namespace Booking.API.Services
                     };
                 }
 
-                var checkouts = values.Select(item => JsonConvert.DeserializeObject<MovieTicket>(item!))
+                var checkouts = values.Select(item => JsonConvert.DeserializeObject<Ticket>(item!))
                     .Select(ticket => _mapper.Map<Checkout>(ticket!)).ToList();
 
                 if (checkouts.Count > 0)
@@ -98,14 +98,14 @@ namespace Booking.API.Services
                     };
                 }
 
-                var tickets = new List<MovieTicket>();
+                var tickets = new List<Ticket>();
 
                 foreach (var item in values)
                 {
                     try
                     {
-                        var ticket = JsonConvert.DeserializeObject<MovieTicket>(item!);
-                        ticket!.status = MovieTicketStatus.Cancelled.ToString();
+                        var ticket = JsonConvert.DeserializeObject<Ticket>(item!);
+                        ticket!.Status = TicketStatus.Cancelled.ToString();
 
                         tickets.Add(ticket);
                     }
@@ -116,7 +116,7 @@ namespace Booking.API.Services
                     }
                 }
 
-                var tasks = tickets.Select(ticket => _publishEndpoint.Publish(_mapper.Map<MovieTicketUpdated>(ticket)));
+                var tasks = tickets.Select(ticket => _publishEndpoint.Publish(_mapper.Map<TicketUpdated>(ticket)));
                 await Task.WhenAll(tasks);
 
                 await _database.KeyDeleteAsync(key);
@@ -187,8 +187,10 @@ namespace Booking.API.Services
                 {
                     var response = await _database.ListGetByIndexAsync(key, index);
 
-                    var ticket = JsonConvert.DeserializeObject<MovieTicket>(response!);
-                    ticket!.price = ticket.price - (ticket.price * discount.Amount / 100);
+                    var ticket = JsonConvert.DeserializeObject<Ticket>(response!);
+                    ticket!.Price = ticket.Price - (ticket.Price * discount.Amount / 100);
+                    ticket.CouponCode = discount.CouponCode;
+                    ticket.Amount = discount.Amount;
 
                     await _database.ListSetByIndexAsync(key, index, JsonConvert.SerializeObject(ticket));
                 }

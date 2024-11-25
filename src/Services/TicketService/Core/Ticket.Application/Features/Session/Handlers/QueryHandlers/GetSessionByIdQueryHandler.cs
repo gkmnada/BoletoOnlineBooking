@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Session.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _sessionRepository.GetByIdAsync(request.session_id, cancellationToken);
+                var values = await _sessionRepository.GetByIdAsync(request.SessionID, cancellationToken);
                 return _mapper.Map<GetSessionByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching session by id");
+                _logger.LogError(ex, "An error occurred while fetching session by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

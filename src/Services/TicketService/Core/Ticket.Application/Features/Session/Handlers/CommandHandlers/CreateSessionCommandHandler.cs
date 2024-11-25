@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Session.Handlers.CommandHandlers
                     Message = "Session created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        SessionID = entity.SessionID
                     }
                 };
             }

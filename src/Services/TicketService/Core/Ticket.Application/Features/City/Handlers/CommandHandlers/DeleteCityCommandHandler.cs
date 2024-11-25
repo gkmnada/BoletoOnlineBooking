@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.City.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _cityRepository.GetByIdAsync(request.city_id, cancellationToken);
+                var values = await _cityRepository.GetByIdAsync(request.CityID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.City.Handlers.CommandHandlers
                     Message = "City deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        CityID = values.CityID
                     }
                 };
             }

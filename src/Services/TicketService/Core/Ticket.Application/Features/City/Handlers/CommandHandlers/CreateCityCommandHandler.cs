@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.City.Handlers.CommandHandlers
                     Message = "City created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        CityID = entity.CityID
                     }
                 };
             }

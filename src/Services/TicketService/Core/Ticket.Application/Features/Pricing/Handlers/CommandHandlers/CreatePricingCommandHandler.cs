@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Pricing.Handlers.CommandHandlers
                     Message = "Pricing created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        PricingID = entity.PricingID
                     }
                 };
             }

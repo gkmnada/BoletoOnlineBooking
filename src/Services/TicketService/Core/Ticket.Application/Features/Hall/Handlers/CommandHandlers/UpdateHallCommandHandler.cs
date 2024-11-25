@@ -29,7 +29,7 @@ namespace Ticket.Application.Features.Hall.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _hallRepository.GetByIdAsync(request.id, cancellationToken);
+                var values = await _hallRepository.GetByIdAsync(request.HallID, cancellationToken);
 
                 if (values == null)
                 {
@@ -65,7 +65,7 @@ namespace Ticket.Application.Features.Hall.Handlers.CommandHandlers
                     Message = "Hall updated successfully",
                     Data = new
                     {
-                        id = values.id,
+                        HallID = values.HallID,
                     }
                 };
             }

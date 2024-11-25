@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Hall.Handlers.CommandHandlers
                     Message = "Hall created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        HallID = entity.HallID
                     }
                 };
             }

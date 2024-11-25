@@ -2,10 +2,10 @@
 {
     public class GetCinemaByIdQueryResult
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string address { get; set; }
-        public string city_id { get; set; }
-        public bool is_active { get; set; }
+        public string CinemaID { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string CityID { get; set; }
+        public bool IsActive { get; set; }
     }
 }

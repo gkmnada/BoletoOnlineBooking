@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.Hall.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _hallRepository.GetByIdAsync(request.hall_id, cancellationToken);
+                var values = await _hallRepository.GetByIdAsync(request.HallID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.Hall.Handlers.CommandHandlers
                     Message = "Hall deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        HallID = values.HallID
                     }
                 };
             }

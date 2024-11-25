@@ -1,14 +1,17 @@
-﻿using Ticket.Domain.Common.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using Ticket.Domain.Common.Base;
 
 namespace Ticket.Domain.Entities
 {
     public class Cinema : BaseEntity
     {
-        public string name { get; set; }
-        public string address { get; set; }
-        public string city_id { get; set; }
-        public City city { get; set; }
-        public List<Hall> halls { get; set; }
-        public List<Session> sessions { get; set; }
+        [Key]
+        public string CinemaID { get; set; } = Guid.NewGuid().ToString("D");
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string CityID { get; set; }
+        public City City { get; set; }
+        public List<Hall> Halls { get; set; }
+        public List<Session> Sessions { get; set; }
     }
 }

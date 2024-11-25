@@ -29,7 +29,7 @@ namespace Ticket.Application.Features.Cinema.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _cinemaRepository.GetByIdAsync(request.id, cancellationToken);
+                var values = await _cinemaRepository.GetByIdAsync(request.CinemaID, cancellationToken);
 
                 if (values == null)
                 {
@@ -65,7 +65,7 @@ namespace Ticket.Application.Features.Cinema.Handlers.CommandHandlers
                     Message = "Cinema updated successfully",
                     Data = new
                     {
-                        id = values.id
+                        CinemaID = values.CinemaID
                     }
                 };
             }

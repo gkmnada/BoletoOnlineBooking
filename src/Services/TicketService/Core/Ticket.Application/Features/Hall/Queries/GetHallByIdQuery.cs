@@ -5,11 +5,11 @@ namespace Ticket.Application.Features.Hall.Queries
 {
     public class GetHallByIdQuery : IRequest<GetHallByIdQueryResult>
     {
-        public string hall_id { get; set; }
+        public string HallID { get; set; }
 
         public GetHallByIdQuery(string id)
         {
-            hall_id = id;
+            HallID = id;
         }
     }
 }

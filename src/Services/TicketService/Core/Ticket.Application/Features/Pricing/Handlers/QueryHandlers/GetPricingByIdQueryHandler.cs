@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Pricing.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _pricingRepository.GetByIdAsync(request.pricing_id, cancellationToken);
+                var values = await _pricingRepository.GetByIdAsync(request.PricingID, cancellationToken);
                 return _mapper.Map<GetPricingByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching the pricing by id");
+                _logger.LogError(ex, "An error occurred while fetching the pricing by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

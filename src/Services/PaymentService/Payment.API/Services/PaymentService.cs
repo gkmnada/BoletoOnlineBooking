@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
-using Boleto.Contracts.Enums.MovieTicket;
+using Boleto.Contracts.Enums.Tickets;
 using Boleto.Contracts.Events.PaymentEvents;
 using Boleto.Contracts.Events.TicketEvents;
-using Iyzipay;
 using Iyzipay.Model;
 using Iyzipay.Request;
 using MassTransit;
 using Newtonsoft.Json;
 using Payment.API.Common.Base;
 using Payment.API.Models;
-using Payment.API.Settings;
+using Payment.API.Options;
 using StackExchange.Redis;
 using System.Globalization;
 using System.Security.Claims;
@@ -59,16 +58,16 @@ namespace Payment.API.Services
 
                 foreach (var item in values)
                 {
-                    var ticket = JsonConvert.DeserializeObject<MovieTicket>(item!);
-                    price += ticket!.price;
+                    var ticket = JsonConvert.DeserializeObject<Ticket>(item!);
+                    price += ticket!.Price;
                 }
 
                 var formattedPrice = price.ToString("F2", CultureInfo.InvariantCulture);
 
-                Options options = new Options();
-                options.ApiKey = MerchantSettings.ApiKey;
-                options.SecretKey = MerchantSettings.SecretKey;
-                options.BaseUrl = MerchantSettings.BaseURL;
+                Iyzipay.Options options = new Iyzipay.Options();
+                options.ApiKey = PaymentOptions.ApiKey;
+                options.SecretKey = PaymentOptions.SecretKey;
+                options.BaseUrl = PaymentOptions.BaseURL;
 
                 CreatePaymentRequest request = new CreatePaymentRequest();
                 request.Locale = Locale.TR.ToString();
@@ -91,35 +90,35 @@ namespace Payment.API.Services
                 request.PaymentCard = paymentCard;
 
                 Buyer buyer = new Buyer();
-                buyer.Id = "BY789";
-                buyer.Name = "John";
-                buyer.Surname = "Doe";
+                buyer.Id = _userID;
+                buyer.Name = "Gökmen";
+                buyer.Surname = "Ada";
                 buyer.GsmNumber = "+905350000000";
-                buyer.Email = "email@email.com";
+                buyer.Email = "gkmenada@hotmail.com";
                 buyer.IdentityNumber = "74300864791";
-                buyer.LastLoginDate = "2015-10-05 12:43:35";
-                buyer.RegistrationDate = "2013-04-21 15:12:09";
-                buyer.RegistrationAddress = "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1";
+                buyer.LastLoginDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                buyer.RegistrationDate = "2024-11-25 12:00:00";
+                buyer.RegistrationAddress = "Çankaya";
                 buyer.Ip = "85.34.78.112";
-                buyer.City = "Istanbul";
+                buyer.City = "Ankara";
                 buyer.Country = "Turkey";
-                buyer.ZipCode = "34732";
+                buyer.ZipCode = "06000";
                 request.Buyer = buyer;
 
                 Address shippingAddress = new Address();
-                shippingAddress.ContactName = "Jane Doe";
-                shippingAddress.City = "Istanbul";
+                shippingAddress.ContactName = "Gökmen Ada";
+                shippingAddress.City = "Ankara";
                 shippingAddress.Country = "Turkey";
-                shippingAddress.Description = "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1";
-                shippingAddress.ZipCode = "34742";
+                shippingAddress.Description = "Çankaya";
+                shippingAddress.ZipCode = "06000";
                 request.ShippingAddress = shippingAddress;
 
                 Address billingAddress = new Address();
-                billingAddress.ContactName = "Jane Doe";
-                billingAddress.City = "Istanbul";
+                billingAddress.ContactName = "Gökmen Ada";
+                billingAddress.City = "Ankara";
                 billingAddress.Country = "Turkey";
-                billingAddress.Description = "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1";
-                billingAddress.ZipCode = "34742";
+                billingAddress.Description = "Çankaya";
+                billingAddress.ZipCode = "06000";
                 request.BillingAddress = billingAddress;
 
                 List<BasketItem> basketItems = new List<BasketItem>();
@@ -128,14 +127,14 @@ namespace Payment.API.Services
                 {
                     BasketItem basketItem = new BasketItem();
 
-                    var ticket = JsonConvert.DeserializeObject<MovieTicket>(item!);
+                    var ticket = JsonConvert.DeserializeObject<Ticket>(item!);
 
-                    basketItem.Id = ticket!.ticket_id.ToString();
-                    basketItem.Name = ticket.movie_id;
-                    basketItem.Category1 = "Online Booking";
-                    basketItem.Category2 = "Movie";
+                    basketItem.Id = ticket!.TicketID.ToString();
+                    basketItem.Name = "Boleto Ticket";
+                    basketItem.Category1 = "Movie";
+                    basketItem.Category2 = "Online Booking";
                     basketItem.ItemType = BasketItemType.PHYSICAL.ToString();
-                    basketItem.Price = ticket.price.ToString("F2", CultureInfo.InvariantCulture);
+                    basketItem.Price = ticket.Price.ToString("F2", CultureInfo.InvariantCulture);
                     basketItems.Add(basketItem);
                 }
 
@@ -143,27 +142,27 @@ namespace Payment.API.Services
 
                 Iyzipay.Model.Payment payment = await Iyzipay.Model.Payment.Create(request, options);
 
-                var tickets = new List<MovieTicket>();
+                var tickets = new List<Ticket>();
 
                 if (payment.Status == "success")
                 {
                     // Update ticket status (Purchased) for ticket service
                     foreach (var item in values)
                     {
-                        var ticket = JsonConvert.DeserializeObject<MovieTicket>(item!);
-                        ticket!.status = MovieTicketStatus.Purchased.ToString();
-                        ticket.price = ticket.price;
+                        var ticket = JsonConvert.DeserializeObject<Ticket>(item!);
+                        ticket!.Status = TicketStatus.Purchased.ToString();
+                        ticket.Price = ticket.Price;
 
                         tickets.Add(ticket);
                     }
 
-                    var success = tickets.Select(item => _publishEndpoint.Publish(_mapper.Map<MovieTicketUpdated>(item)));
+                    var success = tickets.Select(item => _publishEndpoint.Publish(_mapper.Map<TicketUpdated>(item)));
                     await Task.WhenAll(success);
 
                     //Clear the bookings for booking service 
                     var paymentCompleted = new PaymentCompleted
                     {
-                        user_id = _userID,
+                        UserID = _userID,
                     };
                     await _publishEndpoint.Publish(paymentCompleted);
 
@@ -180,13 +179,13 @@ namespace Payment.API.Services
                 // Update ticket status (PaymentFailed) for ticket service
                 foreach (var item in values)
                 {
-                    var ticket = JsonConvert.DeserializeObject<MovieTicket>(item!);
-                    ticket!.status = MovieTicketStatus.PaymentFailed.ToString();
+                    var ticket = JsonConvert.DeserializeObject<Ticket>(item!);
+                    ticket!.Status = TicketStatus.PaymentFailed.ToString();
 
                     tickets.Add(ticket);
                 }
 
-                var failed = tickets.Select(item => _publishEndpoint.Publish(_mapper.Map<MovieTicketUpdated>(item)));
+                var failed = tickets.Select(item => _publishEndpoint.Publish(_mapper.Map<TicketUpdated>(item)));
                 await Task.WhenAll(failed);
 
                 await _database.KeyDeleteAsync(key);

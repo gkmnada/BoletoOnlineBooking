@@ -8,7 +8,7 @@ namespace Payment.API.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<MovieTicket, MovieTicketUpdated>().ReverseMap();
+            CreateMap<Ticket, TicketUpdated>().ReverseMap();
         }
     }
 }

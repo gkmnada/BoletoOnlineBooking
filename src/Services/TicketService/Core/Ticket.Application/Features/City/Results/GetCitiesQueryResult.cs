@@ -2,8 +2,8 @@
 {
     public class GetCitiesQueryResult
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public bool is_active { get; set; }
+        public string CityID { get; set; }
+        public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

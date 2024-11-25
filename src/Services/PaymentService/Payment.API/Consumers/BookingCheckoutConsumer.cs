@@ -23,7 +23,7 @@ namespace Payment.API.Consumers
         {
             try
             {
-                var key = $"BookingCheckouts:{context.Message.user_id}";
+                var key = $"BookingCheckouts:{context.Message.UserID}";
 
                 if (await _database.KeyExistsAsync(key))
                 {

@@ -2,10 +2,10 @@
 {
     public class GetSeatByIdQueryResult
     {
-        public string id { get; set; }
-        public string row { get; set; }
-        public int number { get; set; }
-        public string hall_id { get; set; }
-        public bool is_active { get; set; }
+        public string SeatID { get; set; }
+        public string Row { get; set; }
+        public int Number { get; set; }
+        public string HallID { get; set; }
+        public bool IsActive { get; set; }
     }
 }

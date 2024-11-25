@@ -13,10 +13,10 @@ namespace Ticket.API.Registrations
             services.AddScoped<ICinemaRepository, CinemaRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IHallRepository, HallRepository>();
-            services.AddScoped<IMovieTicketRepository, MovieTicketRepository>();
             services.AddScoped<IPricingRepository, PricingRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }

@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Cinema.Handlers.CommandHandlers
                     Message = "Cinema created successfully",
                     Data = new
                     {
-                        id = entity.id,
+                        CinemaID = entity.CinemaID,
                     }
                 };
             }

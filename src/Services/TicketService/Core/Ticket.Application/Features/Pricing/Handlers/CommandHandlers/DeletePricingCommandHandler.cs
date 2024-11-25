@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.Pricing.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _pricingRepository.GetByIdAsync(request.pricing_id, cancellationToken);
+                var values = await _pricingRepository.GetByIdAsync(request.PricingID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.Pricing.Handlers.CommandHandlers
                     Message = "Pricing deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        PricingID = values.PricingID
                     }
                 };
             }

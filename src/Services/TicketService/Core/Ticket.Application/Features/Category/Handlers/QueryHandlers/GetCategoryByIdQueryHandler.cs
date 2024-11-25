@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Category.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _categoryRepository.GetByIdAsync(request.category_id, cancellationToken);
+                var values = await _categoryRepository.GetByIdAsync(request.CategoryID, cancellationToken);
                 return _mapper.Map<GetCategoryByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching the category by id");
+                _logger.LogError(ex, "An error occurred while fetching the category by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

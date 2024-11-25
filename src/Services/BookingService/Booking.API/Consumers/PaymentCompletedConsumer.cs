@@ -22,7 +22,7 @@ namespace Booking.API.Consumers
         {
             try
             {
-                var key = $"Bookings:{context.Message.user_id}";
+                var key = $"Bookings:{context.Message.UserID}";
                 await _database.KeyDeleteAsync(key);
             }
             catch (Exception ex)

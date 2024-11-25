@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.Session.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _sessionRepository.GetByIdAsync(request.session_id, cancellationToken);
+                var values = await _sessionRepository.GetByIdAsync(request.SessionID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.Session.Handlers.CommandHandlers
                     Message = "Session deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        SessionID = values.SessionID
                     }
                 };
             }

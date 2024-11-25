@@ -21,7 +21,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddMassTransit(options =>
 {
-    options.AddConsumer<MovieTicketCreatedConsumer>();
+    options.AddConsumer<TicketCreatedConsumer>();
     options.AddConsumer<PaymentCompletedConsumer>();
 
     options.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(false));
@@ -33,9 +33,9 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ReceiveEndpoint("booking-movie-ticket-created", endpoint =>
+        config.ReceiveEndpoint("booking-ticket-created", endpoint =>
         {
-            endpoint.ConfigureConsumer<MovieTicketCreatedConsumer>(context);
+            endpoint.ConfigureConsumer<TicketCreatedConsumer>(context);
         });
 
         config.ReceiveEndpoint("booking-payment-completed", endpoint =>

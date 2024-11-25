@@ -1,5 +1,6 @@
-﻿using Discount.API.Dtos.Coupon;
-using Discount.API.Repositories;
+﻿using Discount.API.Features.Coupon.Commands;
+using Discount.API.Features.Coupon.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,54 +11,56 @@ namespace Discount.API.Controllers
     [ApiController]
     public class CouponsController : ControllerBase
     {
-        private readonly ICouponRepository _couponRepository;
-        private readonly ILogger<CouponsController> _logger;
+        private readonly IMediator _mediator;
 
-        public CouponsController(ICouponRepository couponRepository, ILogger<CouponsController> logger)
+        public CouponsController(IMediator mediator)
         {
-            _couponRepository = couponRepository;
-            _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> ListCoupons()
         {
-            var response = await _couponRepository.ListCouponAsync();
+            var query = new GetCouponsQuery();
+            var response = await _mediator.Send(query);
             return Ok(response);
         }
 
         [HttpGet("GetCoupon/{id}")]
         public async Task<IActionResult> GetCouponById(string id)
         {
-            var response = await _couponRepository.GetCouponByIdAsync(id);
+            var query = new GetCouponByIdQuery(id);
+            var response = await _mediator.Send(query);
             return Ok(response);
         }
 
         [HttpGet("GetCouponByCode/{code}")]
         public async Task<IActionResult> GetCouponByCode(string code)
         {
-            var response = await _couponRepository.GetCouponByCodeAsync(code);
+            var query = new GetCouponByCodeQuery(code);
+            var response = await _mediator.Send(query);
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCoupon(CreateCouponDto createCouponDto)
+        public async Task<IActionResult> CreateCoupon(CreateCouponCommand createCouponCommand)
         {
-            var response = await _couponRepository.CreateCouponAsync(createCouponDto);
+            var response = await _mediator.Send(createCouponCommand);
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCoupon(UpdateCouponDto updateCouponDto)
+        public async Task<IActionResult> UpdateCoupon(UpdateCouponCommand updateCouponCommand)
         {
-            var response = await _couponRepository.UpdateCouponAsync(updateCouponDto);
+            var response = await _mediator.Send(updateCouponCommand);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoupon(string id)
         {
-            var response = await _couponRepository.DeleteCouponAsync(id);
+            var command = new DeleteCouponCommand(id);
+            var response = await _mediator.Send(command);
             return Ok(response);
         }
     }

@@ -23,7 +23,7 @@ namespace Ticket.Application.Features.Category.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _categoryRepository.GetByIdAsync(request.category_id, cancellationToken);
+                var values = await _categoryRepository.GetByIdAsync(request.CategoryID, cancellationToken);
 
                 if (values == null)
                 {
@@ -43,7 +43,7 @@ namespace Ticket.Application.Features.Category.Handlers.CommandHandlers
                     Message = "Category deleted successfully",
                     Data = new
                     {
-                        id = values.id
+                        CategoryID = values.CategoryID
                     }
                 };
             }

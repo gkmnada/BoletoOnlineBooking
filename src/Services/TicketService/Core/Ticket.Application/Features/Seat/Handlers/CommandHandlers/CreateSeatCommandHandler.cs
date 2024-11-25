@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Seat.Handlers.CommandHandlers
                     Message = "Seat created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        SeatID = entity.SeatID
                     }
                 };
             }

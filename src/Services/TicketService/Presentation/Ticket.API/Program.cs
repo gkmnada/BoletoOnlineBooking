@@ -28,7 +28,7 @@ builder.Services.PresentationService(builder.Configuration);
 
 builder.Services.AddMassTransit(options =>
 {
-    options.AddConsumer<MovieTicketUpdatedConsumer>();
+    options.AddConsumer<TicketUpdatedConsumer>();
 
     options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
     {
@@ -46,9 +46,9 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ReceiveEndpoint("ticket-movie-ticket-updated", e =>
+        config.ReceiveEndpoint("ticket-updated", e =>
         {
-            e.ConfigureConsumer<MovieTicketUpdatedConsumer>(context);
+            e.ConfigureConsumer<TicketUpdatedConsumer>(context);
         });
 
         config.ConfigureEndpoints(context);

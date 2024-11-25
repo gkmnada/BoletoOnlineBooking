@@ -54,7 +54,7 @@ namespace Ticket.Application.Features.Category.Handlers.CommandHandlers
                     Message = "Category created successfully",
                     Data = new
                     {
-                        id = entity.id
+                        CategoryID = entity.CategoryID
                     }
                 };
             }

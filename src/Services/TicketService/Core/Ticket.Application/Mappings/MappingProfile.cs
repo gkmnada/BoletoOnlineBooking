@@ -8,7 +8,7 @@ using Ticket.Application.Features.City.Commands;
 using Ticket.Application.Features.City.Results;
 using Ticket.Application.Features.Hall.Commands;
 using Ticket.Application.Features.Hall.Results;
-using Ticket.Application.Features.MovieTicket.Commands;
+using Ticket.Application.Features.Ticket.Commands;
 using Ticket.Application.Features.Pricing.Commands;
 using Ticket.Application.Features.Pricing.Results;
 using Ticket.Application.Features.Seat.Commands;
@@ -65,14 +65,14 @@ namespace Ticket.Application.Mappings
             CreateMap<Session, GetSessionsQueryResult>().ReverseMap();
             CreateMap<Session, GetSessionByIdQueryResult>().ReverseMap();
 
-            // MovieTicket mappings
-            CreateMap<MovieTicket, CreateMovieTicketCommand>().ReverseMap();
+            // Ticket mappings
+            CreateMap<Domain.Entities.Ticket, CreateTicketCommand>().ReverseMap();
 
-            CreateMap<MovieTicket, MovieTicketCreated>()
-                .ForMember(x => x.movie_id, options => options.MapFrom(z => z.session.movie_id))
-                .ForMember(x => x.cinema_id, options => options.MapFrom(z => z.session.cinema.id))
-                .ForMember(x => x.hall_id, options => options.MapFrom(z => z.session.hall.id)).ReverseMap();
-            CreateMap<MovieTicket, MovieTicketUpdated>().ReverseMap();
+            CreateMap<Domain.Entities.Ticket, TicketCreated>()
+                .ForMember(x => x.MovieID, options => options.MapFrom(z => z.Session.MovieID))
+                .ForMember(x => x.CinemaID, options => options.MapFrom(z => z.Session.Cinema.CinemaID))
+                .ForMember(x => x.HallID, options => options.MapFrom(z => z.Session.Hall.HallID)).ReverseMap();
+            CreateMap<Domain.Entities.Ticket, TicketUpdated>().ReverseMap();
         }
     }
 }

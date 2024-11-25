@@ -5,6 +5,6 @@ namespace Ticket.Application.Features.City.Commands
 {
     public class CreateCityCommand : IRequest<BaseResponse>
     {
-        public string name { get; set; }
+        public string Name { get; set; }
     }
 }

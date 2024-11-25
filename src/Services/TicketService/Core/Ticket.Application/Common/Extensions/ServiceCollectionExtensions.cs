@@ -5,7 +5,7 @@ using Ticket.Application.Features.Category.Validators;
 using Ticket.Application.Features.Cinema.Validators;
 using Ticket.Application.Features.City.Validators;
 using Ticket.Application.Features.Hall.Validators;
-using Ticket.Application.Features.MovieTicket.Validators;
+using Ticket.Application.Features.Ticket.Validators;
 using Ticket.Application.Features.Pricing.Validators;
 using Ticket.Application.Features.Seat.Validators;
 using Ticket.Application.Features.Session.Validators;
@@ -43,7 +43,7 @@ namespace Ticket.Application.Common.Extensions
             services.AddScoped<CreateSessionValidator>();
             services.AddScoped<UpdateSessionValidator>();
 
-            services.AddScoped<CreateMovieTicketValidator>();
+            services.AddScoped<CreateTicketValidator>();
 
             return services;
         }

@@ -29,7 +29,7 @@ namespace Ticket.Application.Features.City.Handlers.CommandHandlers
         {
             try
             {
-                var values = await _cityRepository.GetByIdAsync(request.id, cancellationToken);
+                var values = await _cityRepository.GetByIdAsync(request.CityID, cancellationToken);
 
                 if (values == null)
                 {
@@ -65,7 +65,7 @@ namespace Ticket.Application.Features.City.Handlers.CommandHandlers
                     Message = "City updated successfully",
                     Data = new
                     {
-                        id = values.id
+                        CityID = values.CityID
                     }
                 };
             }

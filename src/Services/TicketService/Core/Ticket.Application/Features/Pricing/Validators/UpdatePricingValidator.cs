@@ -7,10 +7,10 @@ namespace Ticket.Application.Features.Pricing.Validators
     {
         public UpdatePricingValidator()
         {
-            RuleFor(x => x.id).NotEmpty().WithMessage("Pricing ID is required");
-            RuleFor(x => x.session_id).NotEmpty().WithMessage("Session ID is required");
-            RuleFor(x => x.category_id).NotEmpty().WithMessage("Category ID is required");
-            RuleFor(x => x.price).NotEmpty().WithMessage("Price is required");
+            RuleFor(x => x.PricingID).NotEmpty().WithMessage("Pricing ID is required");
+            RuleFor(x => x.SessionID).NotEmpty().WithMessage("Session ID is required");
+            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Category ID is required");
+            RuleFor(x => x.Price).NotEmpty().WithMessage("Price is required");
         }
     }
 }

@@ -5,11 +5,11 @@ namespace Ticket.Application.Features.Category.Commands
 {
     public class DeleteCategoryCommand : IRequest<BaseResponse>
     {
-        public string category_id { get; set; }
+        public string CategoryID { get; set; }
 
         public DeleteCategoryCommand(string id)
         {
-            category_id = id;
+            CategoryID = id;
         }
     }
 }

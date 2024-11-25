@@ -2,10 +2,10 @@
 {
     public class GetPricingByIdQueryResult
     {
-        public string id { get; set; }
-        public string session_id { get; set; }
-        public string category_id { get; set; }
-        public decimal price { get; set; }
-        public bool is_active { get; set; }
+        public string PricingID { get; set; }
+        public string SessionID { get; set; }
+        public string CategoryID { get; set; }
+        public decimal Price { get; set; }
+        public bool IsActive { get; set; }
     }
 }

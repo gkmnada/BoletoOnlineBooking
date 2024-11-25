@@ -7,7 +7,7 @@ namespace Ticket.Application.Features.Category.Validators
     {
         public CreateCategoryValidator()
         {
-            RuleFor(x => x.name).NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
         }
     }
 }

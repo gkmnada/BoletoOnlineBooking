@@ -24,12 +24,12 @@ namespace Ticket.Application.Features.Seat.Handlers.QueryHandlers
         {
             try
             {
-                var values = await _seatRepository.GetByIdAsync(request.seat_id, cancellationToken);
+                var values = await _seatRepository.GetByIdAsync(request.SeatID, cancellationToken);
                 return _mapper.Map<GetSeatByIdQueryResult>(values);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching the seat by id");
+                _logger.LogError(ex, "An error occurred while fetching the seat by ID");
                 throw new Exception("An error occurred while processing the request", ex);
             }
         }

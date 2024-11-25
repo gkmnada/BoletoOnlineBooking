@@ -16,10 +16,10 @@ namespace Ticket.Persistence.Repositories
 
         public async Task<Session> GetSessionAsync(string id, CancellationToken cancellationToken)
         {
-            var values = await _context.sessions
-                .Include(x => x.cinema)
-                .Include(x => x.hall)
-                .FirstOrDefaultAsync(x => x.id == id, cancellationToken);
+            var values = await _context.Sessions
+                .Include(x => x.Cinema)
+                .Include(x => x.Hall)
+                .FirstOrDefaultAsync(x => x.SessionID == id, cancellationToken);
 
             return values;
         }
