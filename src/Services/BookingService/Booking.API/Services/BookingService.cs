@@ -190,7 +190,7 @@ namespace Booking.API.Services
                     var ticket = JsonConvert.DeserializeObject<Ticket>(response!);
                     ticket!.Price = ticket.Price - (ticket.Price * discount.Amount / 100);
                     ticket.CouponCode = discount.CouponCode;
-                    ticket.Amount = discount.Amount;
+                    ticket.DiscountAmount = discount.Amount;
 
                     await _database.ListSetByIndexAsync(key, index, JsonConvert.SerializeObject(ticket));
                 }

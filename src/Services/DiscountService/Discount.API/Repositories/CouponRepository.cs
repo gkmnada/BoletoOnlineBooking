@@ -34,7 +34,7 @@ namespace Discount.API.Repositories
 
         public async Task<Coupon> GetCouponByIdAsync(string id)
         {
-            return await _context.Coupons.FirstOrDefaultAsync(c => c.CouponID == id);
+            return await _context.Coupons.FindAsync(id);
         }
 
         public async Task<List<Coupon>> ListCouponAsync()

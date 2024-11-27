@@ -12,6 +12,6 @@
         public decimal Price { get; set; }
         public string UserID { get; set; }
         public string CouponCode { get; set; }
-        public int Amount { get; set; }
+        public int DiscountAmount { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Booking.API.Clients
                     throw new ArgumentException("Coupon code is required");
                 }
 
-                var channel = GrpcChannel.ForAddress(_configuration["DiscountGRPC"] ?? "DiscountGRPC");
+                var channel = GrpcChannel.ForAddress(_configuration["DiscountGRPC"] ?? "");
                 var client = new protos.DiscountService.DiscountServiceClient(channel);
 
                 var request = new protos.GetDiscountRequest { CouponCode = couponCode };

@@ -32,6 +32,10 @@ namespace Identity.API
             new ApiResource("PaymentResource")
             {
                 Scopes = { "PaymentFullPermission", "PaymentReadOnlyPermission" }
+            },
+            new ApiResource("OrderResource")
+            {
+                Scopes = { "OrderFullPermission", "OrderReadOnlyPermission" }
             }
         };
         public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
@@ -45,7 +49,9 @@ namespace Identity.API
             new ApiScope("BookingFullPermission", "Full access to booking items"),
             new ApiScope("BookingReadOnlyPermission", "Read only access to booking items"),
             new ApiScope("PaymentFullPermission", "Full access to payment items"),
-            new ApiScope("PaymentReadOnlyPermission", "Read only access to payment items")
+            new ApiScope("PaymentReadOnlyPermission", "Read only access to payment items"),
+            new ApiScope("OrderFullPermission", "Full access to order items"),
+            new ApiScope("OrderReadOnlyPermission", "Read only access to order items")
         };
         public static IEnumerable<Client> Clients => new Client[]
         {
@@ -63,7 +69,7 @@ namespace Identity.API
                 ClientName = "Admin Client",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret("DuendeAdminClientSecret".Sha256()) },
-                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission", "PaymentFullPermission",
+                AllowedScopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission", "PaymentFullPermission", "OrderFullPermission",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile

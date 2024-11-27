@@ -14,7 +14,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    .UseSnakeCaseNamingConvention();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -46,7 +47,7 @@ builder.Services.AddMassTransit(options =>
             host.Password("guest");
         });
 
-        config.ReceiveEndpoint("ticket-updated", e =>
+        config.ReceiveEndpoint("ticket-ticket-updated", e =>
         {
             e.ConfigureConsumer<TicketUpdatedConsumer>(context);
         });

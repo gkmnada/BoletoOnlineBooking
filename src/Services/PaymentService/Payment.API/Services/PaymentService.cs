@@ -5,8 +5,11 @@ using Boleto.Contracts.Events.TicketEvents;
 using Iyzipay.Model;
 using Iyzipay.Request;
 using MassTransit;
+using MediatR;
 using Newtonsoft.Json;
+using Payment.API.Clients;
 using Payment.API.Common.Base;
+using Payment.API.Features.Payment.Commands;
 using Payment.API.Models;
 using Payment.API.Options;
 using StackExchange.Redis;
@@ -21,11 +24,13 @@ namespace Payment.API.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
         private readonly ILogger<PaymentService> _logger;
+        private readonly OrderClient _orderClient;
         private readonly string _connectionString;
         private readonly string _userID;
 
-        public PaymentService(ILogger<PaymentService> logger, IHttpContextAccessor httpContextAccessor, IPublishEndpoint publishEndpoint, IMapper mapper, IConfiguration configuration)
+        public PaymentService(IHttpContextAccessor httpContextAccessor, IPublishEndpoint publishEndpoint, IMapper mapper, IMediator mediator, ILogger<PaymentService> logger, OrderClient orderClient, IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("RedisDatabase") ?? "localhost";
             ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(_connectionString);
@@ -33,8 +38,10 @@ namespace Payment.API.Services
             _httpContextAccessor = httpContextAccessor;
             _publishEndpoint = publishEndpoint;
             _mapper = mapper;
+            _mediator = mediator;
             _userID = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
             _logger = logger;
+            _orderClient = orderClient;
         }
 
         public async Task<BaseResponse> ProcessPaymentAsync(PaymentForm paymentForm)
@@ -71,7 +78,7 @@ namespace Payment.API.Services
 
                 CreatePaymentRequest request = new CreatePaymentRequest();
                 request.Locale = Locale.TR.ToString();
-                request.ConversationId = Guid.NewGuid().ToString("D");
+                request.ConversationId = "123456789";
                 request.Price = formattedPrice;
                 request.PaidPrice = formattedPrice;
                 request.Currency = Currency.TRY.ToString();
@@ -90,7 +97,7 @@ namespace Payment.API.Services
                 request.PaymentCard = paymentCard;
 
                 Buyer buyer = new Buyer();
-                buyer.Id = _userID;
+                buyer.Id = "123456789";
                 buyer.Name = "Gökmen";
                 buyer.Surname = "Ada";
                 buyer.GsmNumber = "+905350000000";
@@ -158,6 +165,46 @@ namespace Payment.API.Services
 
                     var success = tickets.Select(item => _publishEndpoint.Publish(_mapper.Map<TicketUpdated>(item)));
                     await Task.WhenAll(success);
+
+                    // Create order for order service
+                    var createOrderRequest = new CreateOrderRequest
+                    {
+                        MovieID = tickets.First().MovieID,
+                        Status = TicketStatus.Purchased.ToString(),
+                        TotalAmount = price,
+                        CouponCode = tickets.Select(x => x.CouponCode).FirstOrDefault() ?? "",
+                        DiscountAmount = tickets.Select(x => x.DiscountAmount).FirstOrDefault(),
+                        UserID = _userID,
+                        OrderDetails = tickets.Select(ticket => new CreateOrderDetailRequest
+                        {
+                            MovieID = ticket.MovieID,
+                            CinemaID = ticket.CinemaID,
+                            HallID = ticket.HallID,
+                            SessionID = ticket.SessionID,
+                            SeatID = ticket.SeatID,
+                            Status = ticket.Status,
+                            Price = ticket.Price
+                        }).ToList()
+                    };
+
+                    var response = await _orderClient.CreateOrder(createOrderRequest);
+
+                    // Create payment
+                    var command = new CreatePaymentCommand
+                    {
+                        ConversationID = payment.ConversationId,
+                        ProcessID = payment.PaymentId,
+                        TransactionsID = payment.PaymentItems.Select(x => x.PaymentTransactionId).ToList(),
+                        PaymentMethod = payment.CardAssociation,
+                        PaymentType = Convert.ToInt16(payment.Installment),
+                        CardType = payment.CardType,
+                        BinNumber = payment.BinNumber,
+                        LastFourDigits = payment.LastFourDigits,
+                        PaymentAmount = Convert.ToDecimal(payment.Price),
+                        OrderID = response.OrderID
+                    };
+
+                    await _mediator.Send(command);
 
                     //Clear the bookings for booking service 
                     var paymentCompleted = new PaymentCompleted

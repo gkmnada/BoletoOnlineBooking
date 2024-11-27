@@ -23,7 +23,7 @@ namespace Ticket.Application.Consumers
 
         public async Task Consume(ConsumeContext<TicketUpdated> context)
         {
-            CancellationToken cancellationToken = new CancellationToken();
+            CancellationToken cancellationToken = context.CancellationToken;
 
             try
             {

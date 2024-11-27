@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "Payment.API.protos";
+
+service OrderService {
+	rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+}
+
+message GetOrderRequest {
+	string movieID = 1;
+	string status = 2;
+	double totalAmount = 3;
+	string couponCode = 4;
+	int32 discountAmount = 5;
+	string userID = 6;
+	repeated GetOrderDetailRequest orderDetails = 7;
+}
+
+message GetOrderDetailRequest {
+    string movieID = 1;
+    string cinemaID = 2;
+    string hallID = 3;
+    string sessionID = 4;
+    string seatID = 5;
+    string status = 6;
+    double price = 7;
+}
+
+message GetOrderResponse {
+	bool success = 1;
+	string message = 2;
+	string orderID = 3;
+}

@@ -11,7 +11,8 @@ builder.AddServiceDefaults();
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    .UseSnakeCaseNamingConvention();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -28,7 +29,7 @@ builder.Services.AddMassTransit(options =>
     options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
     {
         x.QueryDelay = TimeSpan.FromSeconds(10);
-        x.UseSqlServer();
+        x.UsePostgres();
         x.UseBusOutbox();
     });
 

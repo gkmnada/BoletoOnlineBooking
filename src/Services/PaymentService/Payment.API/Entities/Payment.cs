@@ -11,11 +11,14 @@ namespace Payment.API.Entities
         public string ConversationID { get; set; }
         public string ProcessID { get; set; }
         public List<string> TransactionsID { get; set; }
-        public string PaymentStatus { get; set; } = Enums.Payment.PaymentStatus.Success.ToString();
         public string PaymentMethod { get; set; }
+        public int PaymentType { get; set; }
+        public string CardType { get; set; }
+        public string BinNumber { get; set; }
+        public string LastFourDigits { get; set; }
         public decimal PaymentAmount { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.Now;
-        public string PaymentType { get; set; }
+        public string PaymentStatus { get; set; } = Enums.Payment.PaymentStatus.Success.ToString();
         public string OrderID { get; set; }
     }
 }

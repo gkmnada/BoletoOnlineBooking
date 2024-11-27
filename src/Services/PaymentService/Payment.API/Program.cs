@@ -1,5 +1,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Payment.API.Clients;
 using Payment.API.Consumers;
 using Payment.API.Repositories.Payment;
 using Payment.API.Services;
@@ -46,12 +48,13 @@ builder.Services.AddMassTransit(options =>
 
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<OrderClient>();
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 
 builder.Services.AddScoped<IDatabaseSettings>(options =>
 {
-    return options.GetRequiredService<DatabaseSettings>();
+    return options.GetRequiredService<IOptions<DatabaseSettings>>().Value;
 });
 
 builder.Services.AddControllers();

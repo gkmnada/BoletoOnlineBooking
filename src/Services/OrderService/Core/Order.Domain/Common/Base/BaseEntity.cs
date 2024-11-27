@@ -2,15 +2,13 @@
 {
     public class BaseEntity
     {
-        public string id { get; set; }
-        public DateTime created_at { get; set; }
-        public bool is_active { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
 
         public BaseEntity()
         {
-            id = Guid.NewGuid().ToString("D");
-            created_at = DateTime.UtcNow;
-            is_active = true;
+            CreatedAt = DateTime.UtcNow;
+            IsActive = true;
         }
     }
 }
