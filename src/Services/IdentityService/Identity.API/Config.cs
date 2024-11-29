@@ -36,6 +36,10 @@ namespace Identity.API
             new ApiResource("OrderResource")
             {
                 Scopes = { "OrderFullPermission", "OrderReadOnlyPermission" }
+            },
+            new ApiResource("GatewayResource")
+            {
+                Scopes = { "CatalogFullPermission", "TicketFullPermission", "DiscountFullPermission", "BookingFullPermission", "PaymentFullPermission", "OrderFullPermission" }
             }
         };
         public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
@@ -51,7 +55,7 @@ namespace Identity.API
             new ApiScope("PaymentFullPermission", "Full access to payment items"),
             new ApiScope("PaymentReadOnlyPermission", "Read only access to payment items"),
             new ApiScope("OrderFullPermission", "Full access to order items"),
-            new ApiScope("OrderReadOnlyPermission", "Read only access to order items")
+            new ApiScope("OrderReadOnlyPermission", "Read only access to order items"),
         };
         public static IEnumerable<Client> Clients => new Client[]
         {

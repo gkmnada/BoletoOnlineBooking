@@ -18,6 +18,7 @@ namespace Catalog.API.Controllers
             _mediator = mediator;
         }
 
+        [AllowAnonymous]
         [HttpGet("ListMovieCrews/{id}")]
         public async Task<IActionResult> ListMovieCrews(string id)
         {

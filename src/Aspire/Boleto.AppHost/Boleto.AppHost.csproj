@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ApiGateways\ApiGateway.Ocelot\ApiGateway.Ocelot.csproj" />
     <ProjectReference Include="..\..\Services\BookingService\Booking.API\Booking.API.csproj" />
     <ProjectReference Include="..\..\Services\CatalogService\Presentation\Catalog.API\Catalog.API.csproj" />
     <ProjectReference Include="..\..\Services\DiscountService\Discount.API\Discount.API.csproj" />

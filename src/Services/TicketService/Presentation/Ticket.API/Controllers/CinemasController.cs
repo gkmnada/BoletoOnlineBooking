@@ -18,6 +18,7 @@ namespace Ticket.API.Controllers
             _mediator = mediator;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> ListCinemas()
         {
