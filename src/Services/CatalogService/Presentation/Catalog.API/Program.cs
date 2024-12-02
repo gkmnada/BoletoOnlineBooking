@@ -24,6 +24,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.ApplicationService(builder.Configuration);
 builder.Services.PresentationService(builder.Configuration);
 
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry"];
+    options.Debug = true;
+    options.TracesSampleRate = 1.0;
+    options.AttachStacktrace = true;
+    options.SendDefaultPii = true;
+});
+
 builder.Services.AddMassTransit(options =>
 {
     options.AddEntityFrameworkOutbox<ApplicationContext>(x =>
@@ -61,6 +70,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSentryTracing();
 
 app.MapControllers();
 

@@ -6,13 +6,14 @@ namespace Booking.API.Clients
 {
     public class DiscountClient
     {
-        private readonly IConfiguration _configuration;
+        private readonly protos.DiscountService.DiscountServiceClient _client;
         private readonly ILogger<DiscountClient> _logger;
 
         public DiscountClient(IConfiguration configuration, ILogger<DiscountClient> logger)
         {
-            _configuration = configuration;
             _logger = logger;
+            var channel = GrpcChannel.ForAddress(configuration["DiscountGRPC"] ?? "");
+            _client = new protos.DiscountService.DiscountServiceClient(channel);
         }
 
         public DiscountModel GetDiscount(string couponCode)
@@ -24,11 +25,8 @@ namespace Booking.API.Clients
                     throw new ArgumentException("Coupon code is required");
                 }
 
-                var channel = GrpcChannel.ForAddress(_configuration["DiscountGRPC"] ?? "");
-                var client = new protos.DiscountService.DiscountServiceClient(channel);
-
                 var request = new protos.GetDiscountRequest { CouponCode = couponCode };
-                var response = client.GetDiscount(request);
+                var response = _client.GetDiscount(request);
 
                 return new DiscountModel
                 {

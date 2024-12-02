@@ -3,6 +3,8 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddAuthentication().AddJwtBearer("OcelotAuthenticationScheme", options =>
 {
     options.Authority = builder.Configuration["IdentityURL"];
