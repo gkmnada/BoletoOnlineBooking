@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 src/Services/CatalogService/Presentation/Catalog.API/appsettings.json
+src/Frontends/Boleto.WebUI/wwwroot/assets/

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Boleto.Messages\Boleto.Messages.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,35 @@
+﻿@model List<CategoryResponse>
+
+<header class="header-section">
+    <div class="container">
+        <div class="header-wrapper">
+            <div class="logo">
+                <a href="/Home/Index">
+                    <img src="/assets/images/logo/logo.png" alt="logo">
+                </a>
+            </div>
+            <ul class="menu">
+                <li>
+                    <a href="/Home/Index" class="active">Ana Sayfa</a>
+                </li>
+                @foreach (var item in Model)
+                {
+                    <li>
+                        <a href="#0">@item.Name</a>
+                    </li>
+                }
+                <li>
+                    <a href="#0">İletişim</a>
+                </li>
+                <li class="header-button pr-0">
+                    <a href="/Account/Login">Giriş Yap</a>
+                </li>
+            </ul>
+            <div class="header-bar d-lg-none">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</header>
