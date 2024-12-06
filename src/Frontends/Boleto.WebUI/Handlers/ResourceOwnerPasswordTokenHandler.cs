@@ -39,9 +39,8 @@ namespace Boleto.WebUI.Handlers
                     if (!string.IsNullOrWhiteSpace(token))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        response = await base.SendAsync(request, cancellationToken);
                     }
-
-                    response = await base.SendAsync(request, cancellationToken);
                 }
 
                 return response;

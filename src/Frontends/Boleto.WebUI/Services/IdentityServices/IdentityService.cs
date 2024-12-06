@@ -42,6 +42,12 @@ namespace Boleto.WebUI.Services.IdentityServices
                 RefreshToken = refreshToken,
             });
 
+            if (tokenResponse.IsError)
+            {
+                await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return false;
+            }
+
             var authenticationTokens = new List<AuthenticationToken>
             {
                 new AuthenticationToken
@@ -82,7 +88,7 @@ namespace Boleto.WebUI.Services.IdentityServices
                 ClientId = _clientSettings.ClientId,
                 ClientSecret = _clientSettings.ClientSecret,
                 UserName = model.Username,
-                Password = model.Password,
+                Password = model.Password
             });
 
             var userInfo = await _httpClient.GetUserInfoAsync(new UserInfoRequest

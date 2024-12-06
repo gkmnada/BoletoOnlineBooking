@@ -1,0 +1,45 @@
+﻿@model List<MovieResponse>
+
+<section class="movie-section padding-top padding-bottom">
+    <div class="container">
+        <div class="tab">
+            <div class="section-header-2">
+                <div class="left">
+                    <h2 class="title">Filmler</h2>
+                    <p>Bugün bu filmleri kaçırmadığınızdan emin olun</p>
+                </div>
+            </div>
+            <div class="tab-area mb-30-none">
+                <div class="tab-item active">
+                    <div class="owl-carousel owl-theme tab-slider">
+                        @foreach (var item in Model)
+                        {
+                            <div class="item">
+                                <div class="movie-grid">
+                                    <div class="movie-thumb c-thumb">
+                                        <a href="#0">
+                                            <img src="@item.ImageURL" alt="movie">
+                                        </a>
+                                    </div>
+                                    <div class="movie-content bg-one">
+                                        <h5 class="title m-0">
+                                            <a href="#0">@item.MovieName</a>
+                                        </h5>
+                                        <ul class="movie-rating-percent">
+                                            <li>
+                                                <div class="thumb">
+                                                    <img src="/assets/images/movie/cake.png" alt="movie">
+                                                </div>
+                                                <span class="content">%@item.AudienceScore</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
