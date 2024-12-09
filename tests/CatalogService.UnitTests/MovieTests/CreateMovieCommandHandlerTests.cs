@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CatalogService.UnitTests
+namespace CatalogService.UnitTests.MovieTests
 {
     public class CreateMovieCommandHandlerTests
     {
