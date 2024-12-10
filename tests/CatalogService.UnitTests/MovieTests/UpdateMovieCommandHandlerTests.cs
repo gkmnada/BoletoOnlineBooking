@@ -21,7 +21,6 @@ namespace CatalogService.UnitTests.MovieTests
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IFileService> _fileServiceMock;
         private readonly Mock<ILogger<UpdateMovieCommandHandler>> _loggerMock;
-        private readonly Mock<UpdateMovieValidator> _validatorMock;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
 
         public UpdateMovieCommandHandlerTests()
@@ -31,7 +30,6 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock = new Mock<IMapper>();
             _fileServiceMock = new Mock<IFileService>();
             _loggerMock = new Mock<ILogger<UpdateMovieCommandHandler>>();
-            _validatorMock = new Mock<UpdateMovieValidator>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
         }
 
@@ -109,9 +107,11 @@ namespace CatalogService.UnitTests.MovieTests
             response.Message.Should().Be("Movie updated successfully");
             response.Data.Should().Be(existingMovie.MovieID);
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(existingMovie), Times.Once);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(command.ImageURL), Times.Once);
         }
 
         [Fact]
@@ -144,9 +144,12 @@ namespace CatalogService.UnitTests.MovieTests
             response.IsSuccess.Should().BeFalse();
             response.Message.Should().Be("Movie not found");
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -198,8 +201,11 @@ namespace CatalogService.UnitTests.MovieTests
             response.Message.Should().Be("Validation failed");
             response.Errors.Should().NotBeNullOrEmpty();
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -250,13 +256,16 @@ namespace CatalogService.UnitTests.MovieTests
             response.IsSuccess.Should().BeFalse();
             response.Message.Should().Be("Image URL is required");
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowException_WhenRepositoryOrFileOperationFails()
+        public async Task Handle_ShouldThrowException_WhenFileUploadFails()
         {
             // Arrange
             var fileMock = new Mock<IFormFile>();
@@ -308,6 +317,7 @@ namespace CatalogService.UnitTests.MovieTests
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
         }

@@ -21,7 +21,6 @@ namespace CatalogService.UnitTests.MovieTests
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IFileService> _fileServiceMock;
         private readonly Mock<ILogger<CreateMovieCommandHandler>> _loggerMock;
-        private readonly Mock<CreateMovieValidator> _validatorMock;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
 
         public CreateMovieCommandHandlerTests()
@@ -31,7 +30,6 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock = new Mock<IMapper>();
             _fileServiceMock = new Mock<IFileService>();
             _loggerMock = new Mock<ILogger<CreateMovieCommandHandler>>();
-            _validatorMock = new Mock<CreateMovieValidator>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
         }
 
@@ -63,7 +61,6 @@ namespace CatalogService.UnitTests.MovieTests
                 .ReturnsAsync("upload-image-url");
 
             var validator = new CreateMovieValidator();
-
             var validationResult = await validator.ValidateAsync(command);
             validationResult.IsValid.Should().BeTrue("command should be valid");
 
@@ -105,6 +102,8 @@ namespace CatalogService.UnitTests.MovieTests
 
             _movieRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<Movie>()), Times.Once);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Once);
+            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieCreated>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -144,10 +143,12 @@ namespace CatalogService.UnitTests.MovieTests
 
             _movieRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<Movie>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
+            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieCreated>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnFailure_WhenImageUploadFile()
+        public async Task Handle_ShouldReturnFailure_WhenImageUploadFails()
         {
             // Arrange
             var fileMock = new Mock<IFormFile>();
@@ -214,7 +215,7 @@ namespace CatalogService.UnitTests.MovieTests
             };
 
             _fileServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
-        .ReturnsAsync("uploaded-image-url");
+                .ReturnsAsync("uploaded-image-url");
 
             _mapperMock.Setup(x => x.Map<Movie>(command)).Returns(new Movie
             {

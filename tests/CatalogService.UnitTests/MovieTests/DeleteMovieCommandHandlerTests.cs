@@ -72,6 +72,7 @@ namespace CatalogService.UnitTests.MovieTests
             response.Message.Should().Be("Movie deleted successfully");
             response.Data.Should().Be(existingMovie.MovieID);
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.DeleteAsync(existingMovie), Times.Once);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -102,6 +103,7 @@ namespace CatalogService.UnitTests.MovieTests
             response.IsSuccess.Should().BeFalse();
             response.Message.Should().Be("Movie not found");
 
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<Movie>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -109,7 +111,7 @@ namespace CatalogService.UnitTests.MovieTests
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowException_WhenErrorOccurs()
+        public async Task Handle_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
             var command = new DeleteMovieCommand("movie-123");
@@ -124,8 +126,7 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingMovie);
 
-            _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception("Database error"));
+            _movieRepositoryMock.Setup(x => x.DeleteAsync(existingMovie)).Throws(new Exception("An error occurred while deleting the movie"));
 
             var handler = new DeleteMovieCommandHandler(
                 _movieRepositoryMock.Object,
@@ -141,7 +142,10 @@ namespace CatalogService.UnitTests.MovieTests
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");
 
-            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _movieRepositoryMock.Verify(x => x.DeleteAsync(existingMovie), Times.Once);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -178,6 +182,8 @@ namespace CatalogService.UnitTests.MovieTests
 
             // Assert
             response.IsSuccess.Should().BeTrue();
+
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovie.ImageURL), Times.Once);
         }
 
@@ -199,6 +205,7 @@ namespace CatalogService.UnitTests.MovieTests
 
             _movieRepositoryMock.Setup(x => x.DeleteAsync(existingMovie)).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
             _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovie.ImageURL))
                 .ReturnsAsync(true);
 
@@ -217,8 +224,12 @@ namespace CatalogService.UnitTests.MovieTests
             var response = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
             response.IsSuccess.Should().BeTrue();
+
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovie.ImageURL), Times.Once);
         }
     }
 }
