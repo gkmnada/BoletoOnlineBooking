@@ -9,6 +9,8 @@ builder.AddProject<Projects.Discount_API>("discount-service");
 builder.AddProject<Projects.Booking_API>("booking-service");
 builder.AddProject<Projects.Payment_API>("payment-service");
 builder.AddProject<Projects.Order_API>("order-service");
+builder.AddProject<Projects.Notification_API>("notification-api");
+
 builder.AddProject<Projects.ApiGateway_Ocelot>("api-gateway");
 
 builder.Build().Run();

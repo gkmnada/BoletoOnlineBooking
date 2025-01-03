@@ -36,7 +36,7 @@ namespace Catalog.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMovie(CreateMovieCommand command)
+        public async Task<IActionResult> CreateMovie([FromForm] CreateMovieCommand command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);
