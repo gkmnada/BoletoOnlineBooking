@@ -8,6 +8,13 @@
 
 @section Styles {
     <link rel="stylesheet" href="/assets-admin/plugins/custom/datatables/datatables.bundle.css" type="text/css" />
+
+    <style>
+        .swal2-icon.swal2-warning {
+            color: #f8285a !important;
+            border-color: #f8285a !important;
+        }
+    </style>
 }
 
 <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -100,7 +107,7 @@
                                             <a href="/Administration/Movie/UpdateMovie/@item.MovieID" class="menu-link px-3">Güncelle</a>
                                         </div>
                                         <div class="menu-item px-3">
-                                            <a href="/Administration/Movie/DeleteMovie/@item.MovieID" class="menu-link px-3" onclick="return confirmDelete()">Sil</a>
+                                            <a href="/Administration/Movie/DeleteMovie/@item.MovieID" class="menu-link px-3" id="btn-delete-@item.MovieID">Sil</a>
                                         </div>
                                     </div>
                                 </td>
@@ -118,9 +125,46 @@
     <script src="/assets-admin/js/custom/apps/ecommerce/catalog/categories.js"></script>
 
     <script>
-        function confirmDelete() {
-            return confirm("Bu filmi silmek istediğinize emin misiniz?");
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteLinks = document.querySelectorAll('[id^="btn-delete-"]');
+
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const url = this.href;
+
+                    Swal.fire({
+                        title: "Silmek istediğinize emin misiniz?",
+                        text: "Silme işlemi, filme ait tüm bilgilerin ve detayların geri alınamaz şekilde kalıcı olarak silinmesine yol açacaktır. Devam etmek istiyor musunuz?",
+                        icon: "warning",
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        cancelButtonText: 'İptal Et',
+                        confirmButtonText: 'Kalıcı Olarak Sil',
+                        reverseButtons: true,
+                        dangerMode: true,
+                        customClass: {
+                            confirmButton: "btn btn-danger",
+                            cancelButton: 'btn btn-light'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url;
+
+                            Swal.fire({
+                                title: 'Başarılı !',
+                                icon: 'success',
+                                buttonsStyling: false,
+                                confirmButtonText: 'Tamam',
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
     </script>
 }
-

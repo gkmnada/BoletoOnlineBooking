@@ -43,7 +43,7 @@ namespace Catalog.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateMovie(UpdateMovieCommand command)
+        public async Task<IActionResult> UpdateMovie([FromForm] UpdateMovieCommand command)
         {
             var response = await _mediator.Send(command);
             return Ok(response);

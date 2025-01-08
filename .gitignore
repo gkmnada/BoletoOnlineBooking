@@ -365,3 +365,4 @@ FodyWeavers.xsd
 src/Services/CatalogService/Presentation/Catalog.API/appsettings.json
 src/Frontends/Boleto.WebUI/wwwroot/assets/
 src/Frontends/Boleto.WebUI/wwwroot/assets-admin/
+src/Frontends/Boleto.WebUI/wwwroot/images/

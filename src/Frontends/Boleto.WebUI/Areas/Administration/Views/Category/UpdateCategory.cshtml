@@ -1,4 +1,4 @@
-﻿ @model CategoryViewModel
+﻿@model CategoryViewModel
 
 @{
     ViewData["Title"] = "UpdateCategory";
@@ -32,7 +32,7 @@
 
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-xxl">
-        <form method="post" class="form d-flex flex-column flex-lg-row">
+        <form method="post" id="form-update-category" class="form d-flex flex-column flex-lg-row">
             <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
                 <div class="card card-flush py-4">
                     <br />
@@ -100,5 +100,83 @@
             input.value = value;
         }
     </script>
-}
 
+    <script>
+        $(document).ready(function () {
+            $("#form-update-category").submit(function (e) {
+                e.preventDefault();
+
+                var data = $(this).serialize();
+
+                let timerInterval;
+                Swal.fire({
+                    title: "Kategori Güncelleniyor...",
+                    html: "Lütfen Bekleyiniz",
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Administration/Category/UpdateCategory",
+                            data: data,
+                            success: function (response) {
+                                toastr.success("Kategori Listesine Yönlendiriliyorsunuz...", "Kategori Güncellendi", {
+                                    "progressBar": true,
+                                    "positionClass": "toastr-top-right",
+                                    "showDuration": "1000",
+                                    "hideDuration": "1000",
+                                    "timeOut": "1500",
+                                    "extendedTimeOut": "1000",
+                                });
+                                setTimeout(function () {
+                                    window.location.href = "/Administration/Category/Index";
+                                }, 1500);
+                            },
+                            error: function (xhr) {
+                                var errors = xhr.responseJSON && xhr.responseJSON.error;
+
+                                if (!errors) {
+                                    var errorMessage = "Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.";
+                                    toastr.error("", errorMessage, {
+                                        "positionClass": "toastr-top-right",
+                                        "showDuration": "1000",
+                                        "hideDuration": "1000",
+                                        "timeOut": "2000",
+                                        "extendedTimeOut": "1000"
+                                    });
+                                } else {
+                                    showValidationErrors(errors);
+                                }
+                            },
+                            complete: function () {
+                                clearInterval(timerInterval);
+                                Swal.close();
+                            }
+                        });
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                });
+            });
+
+            // Show Validation Errors
+            function showValidationErrors(errors) {
+                if (Array.isArray(errors) && errors.length > 0) {
+                    errors.forEach((error) => {
+                        toastr.error("", error, {
+                            "positionClass": "toastr-top-right",
+                            "showDuration": "1000",
+                            "hideDuration": "1000",
+                            "timeOut": "2000",
+                            "extendedTimeOut": "1000"
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+}

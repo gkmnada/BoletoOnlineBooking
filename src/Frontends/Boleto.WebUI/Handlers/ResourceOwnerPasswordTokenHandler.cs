@@ -1,5 +1,6 @@
 ﻿using Boleto.WebUI.Services.IdentityServices;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Net;
 using System.Net.Http.Headers;
@@ -43,7 +44,12 @@ namespace Boleto.WebUI.Handlers
                     }
                 }
 
-                return response;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    _httpContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+                    await _httpContextAccessor.HttpContext.Response.CompleteAsync();
+                }
             }
 
             return response;

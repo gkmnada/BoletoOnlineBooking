@@ -14,7 +14,8 @@ namespace Catalog.Application.Features.Movie.Commands
         public string ReleaseDate { get; set; }
         public int Rating { get; set; }
         public int AudienceScore { get; set; }
-        public IFormFile ImageURL { get; set; }
+        public IFormFile? ImageURL { get; set; }
+        public string? ExistingImageURL { get; set; }
         public string SlugURL { get; set; }
         public string CategoryID { get; set; }
         public bool IsActive { get; set; }

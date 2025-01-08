@@ -1,14 +1,14 @@
-﻿@model CreateMovieRequest
+﻿@model MovieViewModel
 
 @{
-    ViewData["Title"] = "CreateMovie";
+    ViewData["Title"] = "UpdateMovie";
     Layout = "~/Areas/Administration/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
     <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Yeni Film Oluştur</h1>
+            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Film Listesi</h1>
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                 <li class="breadcrumb-item text-muted">
                     <a class="text-muted text-hover-primary">Katalog</a>
@@ -20,7 +20,11 @@
                 <li class="breadcrumb-item">
                     <span class="bullet bg-gray-500 w-5px h-2px"></span>
                 </li>
-                <li class="breadcrumb-item text-muted">Yeni Film Oluştur</li>
+                <li class="breadcrumb-item text-muted">Film Listesi</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Film Güncelle</li>
             </ul>
         </div>
     </div>
@@ -28,7 +32,7 @@
 
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-xxl">
-        <form method="post" enctype="multipart/form-data" class="form d-flex flex-column flex-lg-row">
+        <form method="post" enctype="multipart/form-data" id="form-update-movie" class="form d-flex flex-column flex-lg-row">
             <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
                 <div class="card card-flush py-4">
                     <div class="card-header">
@@ -36,6 +40,7 @@
                             <h2>Film Fotoğrafı</h2>
                         </div>
                     </div>
+                    <input type="hidden" value="@Model.MovieDetailResponse.MovieID" asp-for="UpdateMovieRequest.MovieID" />
                     <div class="card-body text-center pt-0">
                         <style>
                             .image-input-placeholder {
@@ -47,13 +52,13 @@
                             }
                         </style>
                         <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3" data-kt-image-input="true">
-                            <div class="image-input-wrapper w-150px h-150px"></div>
+                            <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@Model.MovieDetailResponse.ImageURL')"></div>
                             <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Seç">
                                 <i class="ki-duotone ki-pencil fs-7">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>
-                                <input type="file" asp-for="ImageURL" />
+                                <input type="file" asp-for="UpdateMovieRequest.ImageURL" />
                                 <input type="hidden" name="avatar_remove" />
                             </label>
                             <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Temizle">
@@ -79,16 +84,16 @@
                         </div>
                     </div>
                     <div class="card-body pt-0">
-                        <select class="form-select mb-2" asp-for="Genre" data-control="select2" data-hide-search="true" data-placeholder="Film Türünü Seçiniz" data-allow-clear="true" multiple="multiple">
+                        <select class="form-select mb-2" asp-for="UpdateMovieRequest.Genre" data-control="select2" data-hide-search="true" data-placeholder="Film Türünü Seçiniz" data-allow-clear="true" multiple="multiple">
                             <option></option>
-                            <option value="Dram">Dram</option>
-                            <option value="Suç">Suç</option>
-                            <option value="Komedi">Komedi</option>
-                            <option value="Aksiyon">Aksiyon</option>
-                            <option value="Gerilim">Gerilim</option>
-                            <option value="Korku">Korku</option>
-                            <option value="Bilim Kurgu">Bilim Kurgu</option>
-                            <option value="Macera">Macera</option>
+                            <option value="Dram" selected="@Model.MovieDetailResponse.Genre.Contains("Dram")">Dram</option>
+                            <option value="Suç" selected="@Model.MovieDetailResponse.Genre.Contains("Suç")">Suç</option>
+                            <option value="Komedi" selected="@Model.MovieDetailResponse.Genre.Contains("Komedi")">Komedi</option>
+                            <option value="Aksiyon" selected="@Model.MovieDetailResponse.Genre.Contains("Aksiyon")">Aksiyon</option>
+                            <option value="Gerilim" selected="@Model.MovieDetailResponse.Genre.Contains("Gerilim")">Gerilim</option>
+                            <option value="Korku" selected="@Model.MovieDetailResponse.Genre.Contains("Korku")">Korku</option>
+                            <option value="Bilim Kurgu" selected="@Model.MovieDetailResponse.Genre.Contains("Bilim Kurgu")">Bilim Kurgu</option>
+                            <option value="Macera" selected="@Model.MovieDetailResponse.Genre.Contains("Macera")">Macera</option>
                         </select>
                         <div class="text-muted fs-7">Birden Fazla Seçim Yapabilirsiniz</div>
                     </div>
@@ -100,16 +105,16 @@
                         </div>
                     </div>
                     <div class="card-body pt-0">
-                        <select class="form-select mb-2" asp-for="Language" data-control="select2" data-hide-search="true" data-placeholder="Dil Seçiniz" data-allow-clear="true" multiple="multiple">
+                        <select class="form-select mb-2" asp-for="UpdateMovieRequest.Language" data-control="select2" data-hide-search="true" data-placeholder="Dil Seçiniz" data-allow-clear="true" multiple="multiple">
                             <option></option>
-                            <option value="Türkçe">Türkçe</option>
-                            <option value="İngilizce">İngilizce</option>
-                            <option value="Almanca">Almanca</option>
-                            <option value="Fransızca">Fransızca</option>
-                            <option value="İspanyolca">İspanyolca</option>
-                            <option value="İtalyanca">İtalyanca</option>
-                            <option value="Rusça">Rusça</option>
-                            <option value="Çince">Çince</option>
+                            <option value="Türkçe" selected="@Model.MovieDetailResponse.Language.Contains("Türkçe")">Türkçe</option>
+                            <option value="İngilizce" selected="@Model.MovieDetailResponse.Language.Contains("İngilizce")">İngilizce</option>
+                            <option value="Almanca" selected="@Model.MovieDetailResponse.Language.Contains("Almanca")">Almanca</option>
+                            <option value="Fransızca" selected="@Model.MovieDetailResponse.Language.Contains("Fransızca")">Fransızca</option>
+                            <option value="İspanyolca" selected="@Model.MovieDetailResponse.Language.Contains("İspanyolca")">İspanyolca</option>
+                            <option value="İtalyanca" selected="@Model.MovieDetailResponse.Language.Contains("İtalyanca")">İtalyanca</option>
+                            <option value="Rusça" selected="@Model.MovieDetailResponse.Language.Contains("Rusça")">Rusça</option>
+                            <option value="Çince" selected="@Model.MovieDetailResponse.Language.Contains("Çince")">Çince</option>
                         </select>
                         <div class="text-muted fs-7">Birden Fazla Seçim Yapabilirsiniz</div>
                     </div>
@@ -128,13 +133,13 @@
                                 <div class="card-body pt-0">
                                     <div class="mb-10 fv-row">
                                         <label class="required form-label">Film Adı</label>
-                                        <input type="text" class="form-control mb-2" asp-for=MovieName placeholder="Film Adı Giriniz" id="txt-movie-name" oninput="formatMovieName()" />
-                                        <span class="text-danger" asp-validation-for="MovieName"></span>
+                                        <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.MovieName" asp-for="UpdateMovieRequest.MovieName" placeholder="Film Adı Giriniz" id="txt-movie-name" oninput="formatMovieName()" />
+                                        <span class="text-danger" asp-validation-for="UpdateMovieRequest.MovieName"></span>
                                     </div>
                                     <div class="mb-10 fv-row">
                                         <label class="required form-label">Film URL</label>
-                                        <input type="text" class="form-control mb-2" asp-for=SlugURL placeholder="Film URL Giriniz" id="txt-slug-url" oninput="formatSlugURL()" />
-                                        <span class="text-danger" asp-validation-for="SlugURL"></span>
+                                        <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.SlugURL" asp-for="UpdateMovieRequest.SlugURL" placeholder="Film URL Giriniz" id="txt-slug-url" oninput="formatSlugURL()" />
+                                        <span class="text-danger" asp-validation-for="UpdateMovieRequest.SlugURL"></span>
                                     </div>
                                 </div>
                             </div>
@@ -148,26 +153,33 @@
                                     <div class="d-flex flex-wrap gap-5 mb-5">
                                         <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
                                             <label class="required form-label">Film Süresi</label>
-                                            <input type="text" class="form-control mb-2" asp-for=Duration placeholder="Film Süresini Giriniz" />
-                                            <span class="text-danger" asp-validation-for="Duration"></span>
+                                            <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.Duration" asp-for="UpdateMovieRequest.Duration" placeholder="Film Süresini Giriniz" />
+                                            <span class="text-danger" asp-validation-for="UpdateMovieRequest.Duration"></span>
                                         </div>
                                         <div class="fv-row w-100 flex-md-root">
                                             <label class="required form-label">Yayınlanma Tarihi</label>
-                                            <input type="text" class="form-control mb-2" asp-for=ReleaseDate placeholder="Yayınlanma Tarihini Giriniz" />
-                                            <span class="text-danger" asp-validation-for="ReleaseDate"></span>
+                                            <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.ReleaseDate" asp-for="UpdateMovieRequest.ReleaseDate" placeholder="Yayınlanma Tarihini Giriniz" />
+                                            <span class="text-danger" asp-validation-for="UpdateMovieRequest.ReleaseDate"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-wrap gap-5 mb-5">
                                         <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
                                             <label class="required form-label">IMDB Puanı</label>
-                                            <input type="text" class="form-control mb-2" asp-for=Rating placeholder="IMDB Puanı Giriniz" />
-                                            <span class="text-danger" asp-validation-for="Rating"></span>
+                                            <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.Rating" asp-for="UpdateMovieRequest.Rating" placeholder="IMDB Puanı Giriniz" />
+                                            <span class="text-danger" asp-validation-for="UpdateMovieRequest.Rating"></span>
                                         </div>
                                         <div class="fv-row w-100 flex-md-root">
                                             <label class="required form-label">İzleyici Puanı</label>
-                                            <input type="text" class="form-control mb-2" asp-for=AudienceScore placeholder="İzleyici Puanı Giriniz" />
-                                            <span class="text-danger" asp-validation-for="AudienceScore"></span>
+                                            <input type="text" class="form-control mb-2" value="@Model.MovieDetailResponse.AudienceScore" asp-for="UpdateMovieRequest.AudienceScore" placeholder="İzleyici Puanı Giriniz" />
+                                            <span class="text-danger" asp-validation-for="UpdateMovieRequest.AudienceScore"></span>
                                         </div>
+                                    </div>
+                                    <div class="mb-5 fv-row">
+                                        <label class="required form-label">Durum</label>
+                                        <select class="form-select mb-2" asp-for="UpdateMovieRequest.IsActive" data-control="select2" data-hide-search="true" data-placeholder="Durum Seçiniz">
+                                            <option value="true" selected="@(ViewBag.IsActive == true)">Aktif</option>
+                                            <option value="false" selected="@(ViewBag.IsActive == false)">Pasif</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +189,7 @@
                 <div class="d-flex justify-content-end">
                     <a asp-controller="Movie" asp-action="Index" asp-area="Administration" class="btn btn-light me-5">İptal Et</a>
                     <button type="submit" class="btn btn-primary">
-                        <span class="indicator-label">Oluştur</span>
+                        <span class="indicator-label">Güncelle</span>
                     </button>
                 </div>
             </div>
@@ -218,14 +230,14 @@
 
     <script>
         $(document).ready(function () {
-            $("form").submit(function (e) {
+            $("#form-update-movie").submit(function (e) {
                 e.preventDefault();
 
                 var formData = new FormData(this);
 
                 let timerInterval;
                 Swal.fire({
-                    title: "Film Oluşturuluyor...",
+                    title: "Film Güncelleniyor...",
                     html: "Lütfen Bekleyiniz",
                     timerProgressBar: true,
                     allowOutsideClick: false,
@@ -235,12 +247,12 @@
 
                         $.ajax({
                             type: "POST",
-                            url: "/Administration/Movie/CreateMovie",
+                            url: "/Administration/Movie/UpdateMovie",
                             data: formData,
                             processData: false,
                             contentType: false,
                             success: function (response) {
-                                toastr.success("Film Listesine Yönlendiriliyorsunuz...", "Film Oluşturuldu", {
+                                toastr.success("Film Listesine Yönlendiriliyorsunuz...", "Film Güncellendi", {
                                     "progressBar": true,
                                     "positionClass": "toastr-top-right",
                                     "showDuration": "1000",

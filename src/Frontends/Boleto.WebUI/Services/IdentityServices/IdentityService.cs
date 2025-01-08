@@ -39,6 +39,7 @@ namespace Boleto.WebUI.Services.IdentityServices
                 Address = discovery.TokenEndpoint,
                 ClientId = _clientSettings.ClientId,
                 ClientSecret = _clientSettings.ClientSecret,
+                GrantType = OpenIdConnectGrantTypes.RefreshToken,
                 RefreshToken = refreshToken,
             });
 

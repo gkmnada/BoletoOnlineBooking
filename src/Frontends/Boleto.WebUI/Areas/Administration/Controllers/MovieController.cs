@@ -1,6 +1,7 @@
 ﻿using Boleto.Business.Services.Catalog.Movie;
 using Boleto.Business.Validators.Catalog.Movie;
 using Boleto.Messages.Catalog.Movie.Requests;
+using Boleto.WebUI.Areas.Administration.Models.Catalog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,24 +35,57 @@ namespace Boleto.WebUI.Areas.Administration.Controllers
         {
             request.CategoryID = "0d280bd7-fe8b-42b2-9b41-21af55742747";
 
-            request.Rating = 1;
-            request.AudienceScore = 1;
-
             var validator = new CreateMovieValidator();
-            var validatorResult = await validator.ValidateAsync(request);
+            var validationResult = await validator.ValidateAsync(request);
 
-            if (!validatorResult.IsValid)
+            if (!validationResult.IsValid)
             {
-                foreach (var error in validatorResult.Errors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-
-                return View();
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { error = errors });
             }
 
             var response = await _movieService.CreateMovieAsync(request);
-            return RedirectToAction("Index", "Movie", new { area = "Administration" });
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        [Route("Administration/Movie/UpdateMovie/{id}")]
+        public async Task<IActionResult> UpdateMovie(string id)
+        {
+            var movie = await _movieService.GetMovieDetailAsync(id);
+
+            ViewBag.IsActive = movie.IsActive;
+
+            var model = new MovieViewModel
+            {
+                MovieDetailResponse = movie
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateMovie(MovieViewModel model)
+        {
+            model.UpdateMovieRequest.CategoryID = "0d280bd7-fe8b-42b2-9b41-21af55742747";
+
+            if (model.UpdateMovieRequest.ImageURL == null)
+            {
+                var movie = await _movieService.GetMovieDetailAsync(model.UpdateMovieRequest.MovieID);
+                model.UpdateMovieRequest.ExistingImageURL = movie.ImageURL;
+            }
+
+            var validator = new UpdateMovieValidator();
+            var validationResult = await validator.ValidateAsync(model.UpdateMovieRequest);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { error = errors });
+            }
+
+            var response = await _movieService.UpdateMovieAsync(model.UpdateMovieRequest);
+            return Json(new { success = true });
         }
 
         [Route("Administration/Movie/DeleteMovie/{id}")]

@@ -13,6 +13,7 @@ namespace Boleto.Messages.Catalog.Movie.Requests
         public int Rating { get; set; }
         public int AudienceScore { get; set; }
         public IFormFile ImageURL { get; set; }
+        public string ExistingImageURL { get; set; }
         public string SlugURL { get; set; }
         public string CategoryID { get; set; }
         public bool IsActive { get; set; }

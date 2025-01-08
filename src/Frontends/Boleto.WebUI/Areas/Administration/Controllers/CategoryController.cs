@@ -38,16 +38,12 @@ namespace Boleto.WebUI.Areas.Administration.Controllers
 
             if (!validationResult.IsValid)
             {
-                foreach (var error in validationResult.Errors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-
-                return View(request);
+                var errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+                return BadRequest(new { error = errors });
             }
 
             await _categoryService.CreateCategoryAsync(request);
-            return RedirectToAction("Index", "Category", new { area = "Administration" });
+            return Json(new { success = true });
         }
 
         [Route("Administration/Category/UpdateCategory/{id}")]
@@ -74,16 +70,12 @@ namespace Boleto.WebUI.Areas.Administration.Controllers
 
             if (!validationResult.IsValid)
             {
-                foreach (var error in validationResult.Errors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-
-                return View(model.UpdateCategoryRequest);
+                var errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+                return BadRequest(new { error = errors });
             }
 
             await _categoryService.UpdateCategoryAsync(model.UpdateCategoryRequest);
-            return RedirectToAction("Index", "Category", new { area = "Administration" });
+            return Json(new { success = true });
         }
 
         [Route("Administration/Category/DeleteCategory/{id}")]
