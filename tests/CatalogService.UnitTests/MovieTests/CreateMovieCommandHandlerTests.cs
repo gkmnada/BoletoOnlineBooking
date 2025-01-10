@@ -22,6 +22,7 @@ namespace CatalogService.UnitTests.MovieTests
         private readonly Mock<IFileService> _fileServiceMock;
         private readonly Mock<ILogger<CreateMovieCommandHandler>> _loggerMock;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+        private readonly CreateMovieCommandHandler _handler;
 
         public CreateMovieCommandHandlerTests()
         {
@@ -31,6 +32,15 @@ namespace CatalogService.UnitTests.MovieTests
             _fileServiceMock = new Mock<IFileService>();
             _loggerMock = new Mock<ILogger<CreateMovieCommandHandler>>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
+
+            _handler = new CreateMovieCommandHandler(
+                _movieRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                _mapperMock.Object,
+                _fileServiceMock.Object,
+                _loggerMock.Object,
+                new CreateMovieValidator(),
+                _publishEndpointMock.Object);
         }
 
         [Fact]
@@ -83,17 +93,8 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Movie>())).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new CreateMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                new CreateMovieValidator(),
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
@@ -124,17 +125,8 @@ namespace CatalogService.UnitTests.MovieTests
                 ImageURL = null!
             };
 
-            var handler = new CreateMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                new CreateMovieValidator(),
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeFalse();
@@ -174,17 +166,8 @@ namespace CatalogService.UnitTests.MovieTests
             _fileServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
                 .ThrowsAsync(new Exception("Image upload failed"));
 
-            var handler = new CreateMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                new CreateMovieValidator(),
-                _publishEndpointMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");
@@ -233,17 +216,8 @@ namespace CatalogService.UnitTests.MovieTests
 
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new Exception("Database save failed"));
 
-            var handler = new CreateMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                new CreateMovieValidator(),
-                _publishEndpointMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");
@@ -290,17 +264,8 @@ namespace CatalogService.UnitTests.MovieTests
                 ImageURL = "uploaded-image-url"
             });
 
-            var handler = new CreateMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                new CreateMovieValidator(),
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieCreated>(), It.IsAny<CancellationToken>()), Times.Once);

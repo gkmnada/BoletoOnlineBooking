@@ -16,6 +16,7 @@ namespace CatalogService.UnitTests.CategoryTests
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<UpdateCategoryCommandHandler>> _loggerMock;
+        private readonly UpdateCategoryCommandHandler _handler;
 
         public UpdateCategoryCommandHandlerTests()
         {
@@ -23,6 +24,13 @@ namespace CatalogService.UnitTests.CategoryTests
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<UpdateCategoryCommandHandler>>();
+
+            _handler = new UpdateCategoryCommandHandler(
+                _categoryRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object,
+                new UpdateCategoryValidator());
         }
 
         [Fact]
@@ -55,15 +63,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.UpdateAsync(existingCategory)).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new UpdateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new UpdateCategoryValidator());
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
@@ -89,15 +90,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Category)null!);
 
-            var handler = new UpdateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new UpdateCategoryValidator());
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeFalse();
@@ -133,15 +127,8 @@ namespace CatalogService.UnitTests.CategoryTests
             var validationResult = await validator.ValidateAsync(command);
             validationResult.IsValid.Should().BeFalse();
 
-            var handler = new UpdateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new UpdateCategoryValidator());
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeFalse();
@@ -174,15 +161,8 @@ namespace CatalogService.UnitTests.CategoryTests
 
             _categoryRepositoryMock.Setup(x => x.UpdateAsync(existingCategory)).Throws(new Exception());
 
-            var handler = new UpdateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new UpdateCategoryValidator());
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>();

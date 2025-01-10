@@ -13,12 +13,18 @@ namespace CatalogService.UnitTests.CategoryTests
         private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly Mock<ILogger<DeleteCategoryCommandHandler>> _loggerMock;
+        private readonly DeleteCategoryCommandHandler _handler;
 
         public DeleteCategoryCommandHandlerTests()
         {
             _categoryRepositoryMock = new Mock<ICategoryRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _loggerMock = new Mock<ILogger<DeleteCategoryCommandHandler>>();
+
+            _handler = new DeleteCategoryCommandHandler(
+                _categoryRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -40,10 +46,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.DeleteAsync(existingCategory)).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new DeleteCategoryCommandHandler(_categoryRepositoryMock.Object, _unitOfWorkMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -63,10 +67,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.GetByIdAsync(command.CategoryID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Category)null!);
 
-            var handler = new DeleteCategoryCommandHandler(_categoryRepositoryMock.Object, _unitOfWorkMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -96,10 +98,8 @@ namespace CatalogService.UnitTests.CategoryTests
 
             _categoryRepositoryMock.Setup(x => x.DeleteAsync(existingCategory)).Throws(new Exception("An error occurred while deleting the category"));
 
-            var handler = new DeleteCategoryCommandHandler(_categoryRepositoryMock.Object, _unitOfWorkMock.Object, _loggerMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");

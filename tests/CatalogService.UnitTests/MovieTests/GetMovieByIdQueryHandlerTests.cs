@@ -15,12 +15,18 @@ namespace CatalogService.UnitTests.MovieTests
         private readonly Mock<IMovieRepository> _movieRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<GetMovieByIdQueryHandler>> _loggerMock;
+        private readonly GetMovieByIdQueryHandler _handler;
 
         public GetMovieByIdQueryHandlerTests()
         {
             _movieRepositoryMock = new Mock<IMovieRepository>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<GetMovieByIdQueryHandler>>();
+
+            _handler = new GetMovieByIdQueryHandler(
+                _movieRepositoryMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -38,10 +44,8 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock.Setup(x => x.Map<GetMovieByIdQueryResult>(movie))
                 .Returns(mapper);
 
-            var handler = new GetMovieByIdQueryHandler(_movieRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(query, CancellationToken.None);
+            var response = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -64,10 +68,8 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock.Setup(x => x.Map<GetMovieByIdQueryResult>(null))
                 .Returns((GetMovieByIdQueryResult)null!);
 
-            var handler = new GetMovieByIdQueryHandler(_movieRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(query, CancellationToken.None);
+            var response = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             response.Should().BeNull();
@@ -85,10 +87,8 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Setup(x => x.GetByIdAsync(query.MovieID, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception("Database error"));
 
-            var handler = new GetMovieByIdQueryHandler(_movieRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(query, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");

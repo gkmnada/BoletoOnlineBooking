@@ -15,12 +15,18 @@ namespace CatalogService.UnitTests.CategoryTests
         private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<GetCategoryByIdQueryHandler>> _loggerMock;
+        private readonly GetCategoryByIdQueryHandler _handler;
 
         public GetCategoryByIdQueryHandlerTests()
         {
             _categoryRepositoryMock = new Mock<ICategoryRepository>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<GetCategoryByIdQueryHandler>>();
+
+            _handler = new GetCategoryByIdQueryHandler(
+                _categoryRepositoryMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -38,10 +44,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _mapperMock.Setup(x => x.Map<GetCategoryByIdQueryResult>(category))
                 .Returns(mapper);
 
-            var handler = new GetCategoryByIdQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(query, CancellationToken.None);
+            var response = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -61,10 +65,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.GetByIdAsync(query.CategoryID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Category)null!);
 
-            var handler = new GetCategoryByIdQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(query, CancellationToken.None);
+            var response = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             response.Should().BeNull();
@@ -82,10 +84,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.GetByIdAsync(query.CategoryID, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception());
 
-            var handler = new GetCategoryByIdQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(query, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>();

@@ -16,6 +16,7 @@ namespace CatalogService.UnitTests.CategoryTests
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<CreateCategoryCommandHandler>> _loggerMock;
+        private readonly CreateCategoryCommandHandler _handler;
 
         public CreateCategoryCommandHandlerTests()
         {
@@ -23,6 +24,13 @@ namespace CatalogService.UnitTests.CategoryTests
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<CreateCategoryCommandHandler>>();
+
+            _handler = new CreateCategoryCommandHandler(
+                _categoryRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object,
+                new CreateCategoryValidator());
         }
 
         [Fact]
@@ -44,15 +52,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Category>())).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var handler = new CreateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new CreateCategoryValidator());
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
@@ -77,15 +78,8 @@ namespace CatalogService.UnitTests.CategoryTests
             var validationResult = await validator.ValidateAsync(command);
             validationResult.IsValid.Should().BeFalse();
 
-            var handler = new CreateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new CreateCategoryValidator());
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeFalse();
@@ -110,15 +104,8 @@ namespace CatalogService.UnitTests.CategoryTests
 
             _categoryRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Category>())).Throws(new Exception());
 
-            var handler = new CreateCategoryCommandHandler(
-                _categoryRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object,
-                new CreateCategoryValidator());
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>();

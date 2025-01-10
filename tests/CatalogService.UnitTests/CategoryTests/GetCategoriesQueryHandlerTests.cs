@@ -15,12 +15,18 @@ namespace CatalogService.UnitTests.CategoryTests
         private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<GetCategoriesQueryHandler>> _loggerMock;
+        private readonly GetCategoriesQueryHandler _handler;
 
         public GetCategoriesQueryHandlerTests()
         {
             _categoryRepositoryMock = new Mock<ICategoryRepository>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<GetCategoriesQueryHandler>>();
+
+            _handler = new GetCategoriesQueryHandler(
+                _categoryRepositoryMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -45,10 +51,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _mapperMock.Setup(x => x.Map<List<GetCategoriesQueryResult>>(categories))
                 .Returns(mappedResults);
 
-            var handler = new GetCategoriesQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
+            var response = await _handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -72,10 +76,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _mapperMock.Setup(x => x.Map<List<GetCategoriesQueryResult>>(categories))
                 .Returns(new List<GetCategoriesQueryResult>());
 
-            var handler = new GetCategoriesQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            var response = await handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
+            var response = await _handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -92,10 +94,8 @@ namespace CatalogService.UnitTests.CategoryTests
             _categoryRepositoryMock.Setup(x => x.ListAsync(It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception("An error occurred while fetching the categories"));
 
-            var handler = new GetCategoriesQueryHandler(_categoryRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");

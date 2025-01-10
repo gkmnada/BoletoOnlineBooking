@@ -20,6 +20,7 @@ namespace CatalogService.UnitTests.MovieTests
         private readonly Mock<IFileService> _fileServiceMock;
         private readonly Mock<ILogger<DeleteMovieCommandHandler>> _loggerMock;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+        private readonly DeleteMovieCommandHandler _handler;
 
         public DeleteMovieCommandHandlerTests()
         {
@@ -29,6 +30,14 @@ namespace CatalogService.UnitTests.MovieTests
             _fileServiceMock = new Mock<IFileService>();
             _loggerMock = new Mock<ILogger<DeleteMovieCommandHandler>>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
+
+            _handler = new DeleteMovieCommandHandler(
+                _movieRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                _mapperMock.Object,
+                _fileServiceMock.Object,
+                _loggerMock.Object,
+                _publishEndpointMock.Object);
         }
 
         [Fact]
@@ -56,16 +65,8 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock.Setup(x => x.Map<MovieDeleted>(existingMovie))
                 .Returns(new MovieDeleted { MovieID = existingMovie.MovieID });
 
-            var handler = new DeleteMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
@@ -88,16 +89,8 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Movie)null!);
 
-            var handler = new DeleteMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeFalse();
@@ -128,16 +121,8 @@ namespace CatalogService.UnitTests.MovieTests
 
             _movieRepositoryMock.Setup(x => x.DeleteAsync(existingMovie)).Throws(new Exception("An error occurred while deleting the movie"));
 
-            var handler = new DeleteMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                _publishEndpointMock.Object);
-
             // Act
-            Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing your request");
@@ -169,16 +154,8 @@ namespace CatalogService.UnitTests.MovieTests
             _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovie.ImageURL))
                 .ReturnsAsync(true);
 
-            var handler = new DeleteMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
@@ -212,16 +189,8 @@ namespace CatalogService.UnitTests.MovieTests
             _mapperMock.Setup(x => x.Map<MovieDeleted>(existingMovie))
                 .Returns(new MovieDeleted { MovieID = existingMovie.MovieID });
 
-            var handler = new DeleteMovieCommandHandler(
-                _movieRepositoryMock.Object,
-                _unitOfWorkMock.Object,
-                _mapperMock.Object,
-                _fileServiceMock.Object,
-                _loggerMock.Object,
-                _publishEndpointMock.Object);
-
             // Act
-            var response = await handler.Handle(command, CancellationToken.None);
+            var response = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             response.IsSuccess.Should().BeTrue();
