@@ -1,9 +1,11 @@
 using Catalog.API.Registrations;
+using Catalog.API.Tools;
 using Catalog.Application.Common.Extensions;
 using Catalog.Persistence.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,13 +50,18 @@ builder.Services.AddMassTransit(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "Catalog API";
+        options.WithPreferredScheme("bearer");
+    });
 }
 
 app.UseHttpsRedirection();

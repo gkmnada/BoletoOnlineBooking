@@ -20,7 +20,7 @@ namespace Boleto.Business.Validators.Catalog.Movie
             RuleFor(x => x.SlugURL).NotEmpty().WithMessage("Film URL Boş Bırakılamaz")
                 .MinimumLength(3).WithMessage("Film URL 3 Karakterden Az Olamaz")
                 .MaximumLength(50).WithMessage("Film URL 50 Karakterden Fazla Olamaz");
-            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Kategori ID Boş Bırakılamaz");
+            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Kategori Boş Bırakılamaz");
         }
     }
 }

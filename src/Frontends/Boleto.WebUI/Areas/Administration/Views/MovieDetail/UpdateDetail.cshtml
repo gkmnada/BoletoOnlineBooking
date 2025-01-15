@@ -1,14 +1,14 @@
-﻿@model CreateMovieRequest
+﻿@model MovieDetailViewModel
 
 @{
-    ViewData["Title"] = "CreateMovie";
+    ViewData["Title"] = "UpdateDetail";
     Layout = "~/Areas/Administration/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
     <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Yeni Film Oluştur</h1>
+            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Film Listesi</h1>
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                 <li class="breadcrumb-item text-muted">
                     <a class="text-muted text-hover-primary">Katalog</a>
@@ -20,7 +20,11 @@
                 <li class="breadcrumb-item">
                     <span class="bullet bg-gray-500 w-5px h-2px"></span>
                 </li>
-                <li class="breadcrumb-item text-muted">Yeni Film Oluştur</li>
+                <li class="breadcrumb-item text-muted">Film Listesi</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Detay Güncelle</li>
             </ul>
         </div>
     </div>
@@ -33,7 +37,7 @@
                 <div class="card card-flush py-4">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2>Afiş Görseli</h2>
+                            <h2>Kapak Görseli</h2>
                         </div>
                     </div>
                     <div class="card-body text-center pt-0">
@@ -47,13 +51,13 @@
                             }
                         </style>
                         <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3" data-kt-image-input="true">
-                            <div class="image-input-wrapper w-150px h-150px"></div>
+                            <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@Model.MovieDetailResponse.ImageURL')"></div>
                             <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Görsel Seç">
                                 <i class="ki-duotone ki-pencil fs-7">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>
-                                <input type="file" asp-for="ImageURL" />
+                                <input type="file" asp-for="UpdateMovieDetailRequest.ImageURL" />
                                 <input type="hidden" name="avatar_remove" />
                             </label>
                             <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Temizle">
@@ -75,103 +79,79 @@
                 <div class="card card-flush py-4">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2>Tür</h2>
+                            <h2>Film Fragmanı</h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
-                        <select class="form-select mb-2" asp-for="Genre" data-control="select2" data-hide-search="true" data-placeholder="Film Türünü Seçiniz" data-allow-clear="true" multiple="multiple">
-                            <option></option>
-                            <option value="Dram">Dram</option>
-                            <option value="Suç">Suç</option>
-                            <option value="Komedi">Komedi</option>
-                            <option value="Aksiyon">Aksiyon</option>
-                            <option value="Gerilim">Gerilim</option>
-                            <option value="Korku">Korku</option>
-                            <option value="Bilim Kurgu">Bilim Kurgu</option>
-                            <option value="Macera">Macera</option>
-                        </select>
-                        <div class="text-muted fs-7">Birden Fazla Seçim Yapabilirsiniz</div>
-                    </div>
-                </div>
-                <div class="card card-flush py-4">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2>Dil</h2>
+                    <div class="card-body text-center pt-0">
+                        <style>
+                            .video-input-placeholder {
+                                background-image: url('/assets-admin/media/svg/files/blank-image.svg');
+                            }
+
+                            [data-bs-theme="dark"] .video-input-placeholder {
+                                background-image: url('/assets-admin/media/svg/files/blank-image-dark.svg');
+                            }
+
+                            .video-preview-wrapper {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                            }
+                        </style>
+                        <div class="image-input image-input-empty image-input-outline video-input-placeholder mb-3" data-kt-image-input="true">
+                            <div class="image-input-wrapper w-150px h-150px">
+                                <video id="videoPreview" class="video-preview-wrapper" controls style="display: block;">
+                                    <source src="@Model.MovieDetailResponse.VideoURL" type="video/mp4">
+                                </video>
+                            </div>
+                            <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Video Seç">
+                                <i class="ki-duotone ki-pencil fs-7">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                <input type="file" asp-for="UpdateMovieDetailRequest.VideoURL" accept="video/*" onchange="previewVideo(this);" />
+                                <input type="hidden" name="trailer_remove" />
+                            </label>
+                            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Temizle" onclick="clearVideo();">
+                                <i class="ki-duotone ki-cross fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </span>
+                            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Temizle" onclick="clearVideo();">
+                                <i class="ki-duotone ki-cross fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </span>
                         </div>
-                    </div>
-                    <div class="card-body pt-0">
-                        <select class="form-select mb-2" asp-for="Language" data-control="select2" data-hide-search="true" data-placeholder="Dil Seçiniz" data-allow-clear="true" multiple="multiple">
-                            <option></option>
-                            <option value="Türkçe">Türkçe</option>
-                            <option value="İngilizce">İngilizce</option>
-                            <option value="Almanca">Almanca</option>
-                            <option value="Fransızca">Fransızca</option>
-                            <option value="İspanyolca">İspanyolca</option>
-                            <option value="İtalyanca">İtalyanca</option>
-                            <option value="Rusça">Rusça</option>
-                            <option value="Çince">Çince</option>
-                        </select>
-                        <div class="text-muted fs-7">Birden Fazla Seçim Yapabilirsiniz</div>
+                        <div class="text-muted fs-7">Yalnızca *.mp4, *.mov ve *.avi uzantıları kabul edilir.</div>
                     </div>
                 </div>
             </div>
             <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
-                <div class="tab-content">
-                    <div class="tab-pane fade show active">
-                        <div class="d-flex flex-column gap-7 gap-lg-10">
-                            <div class="card card-flush py-4">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>Film Hakkında</h2>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-0">
-                                    <div class="mb-10 fv-row">
-                                        <label class="required form-label">Film Adı</label>
-                                        <input type="text" class="form-control" asp-for=MovieName placeholder="Film Adı Giriniz" id="txt-movie-name" oninput="formatMovieName()" />
-                                    </div>
-                                    <div class="mb-10 fv-row">
-                                        <label class="required form-label">Film URL</label>
-                                        <input type="text" class="form-control" asp-for=SlugURL placeholder="Film URL Giriniz" id="txt-slug-url" oninput="formatSlugURL()" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-flush py-4">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>Film Detayları</h2>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-0">
-                                    <div class="d-flex flex-wrap gap-5 mb-5">
-                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
-                                            <label class="required form-label">Film Süresi</label>
-                                            <input type="text" class="form-control" asp-for=Duration placeholder="Film Süresini Giriniz" />
-                                        </div>
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <label class="required form-label">Yayınlanma Tarihi</label>
-                                            <input type="text" class="form-control" asp-for=ReleaseDate placeholder="Yayınlanma Tarihini Giriniz" />
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-5 mb-5">
-                                        <div class="fv-row w-100 flex-md-root fv-plugins-icon-container">
-                                            <label class="required form-label">IMDB Puanı</label>
-                                            <input type="text" class="form-control" asp-for=Rating placeholder="IMDB Puanı Giriniz" />
-                                        </div>
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <label class="required form-label">İzleyici Puanı</label>
-                                            <input type="text" class="form-control" asp-for=AudienceScore placeholder="İzleyici Puanı Giriniz" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="card card-flush py-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>Film Detayları</h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="mb-10 fv-row">
+                            <label class="required form-label">Açıklama</label>
+                            <textarea class="form-control form-control-solid" name="UpdateMovieDetailRequest.Description" placeholder="Açıklama Giriniz" rows="5">@Model.MovieDetailResponse.Description</textarea>
                         </div>
                     </div>
                 </div>
+
+                <input type="hidden" value="@Model.MovieDetailResponse.DetailID" asp-for="UpdateMovieDetailRequest.DetailID" />
+                <input type="hidden" value="@Model.MovieDetailResponse.MovieID" asp-for="UpdateMovieDetailRequest.MovieID" />
+
                 <div class="d-flex justify-content-end">
+                    <a href="/Administration/MovieDetail/DeleteDetail/@Model.MovieDetailResponse.DetailID" class="btn btn-danger me-5">Sil</a>
                     <a asp-controller="Movie" asp-action="Index" asp-area="Administration" class="btn btn-light me-5">İptal Et</a>
                     <button type="submit" class="btn btn-primary">
-                        <span class="indicator-label">Oluştur</span>
+                        <span class="indicator-label">Güncelle</span>
                     </button>
                 </div>
             </div>
@@ -181,36 +161,30 @@
 
 @section Scripts {
     <script>
-        function formatMovieName() {
-            var input = document.getElementById('txt-movie-name');
-            var words = input.value.split(' ');
+        function previewVideo(input) {
+            var videoPreview = document.getElementById('videoPreview');
+            var wrapper = input.closest('.image-input');
 
-            for (var i = 0; i < words.length; i++) {
-                var word = words[i];
-                if (word.length > 0) {
-                    words[i] = word.charAt(0).toUpperCase() + word.slice(1);
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    videoPreview.src = e.target.result;
+                    videoPreview.style.display = 'block';
+                    wrapper.classList.remove('image-input-empty');
                 }
+                reader.readAsDataURL(input.files[0]);
             }
-
-            input.value = words.join(' ');
         }
-    </script>
 
-    <script>
-        function formatSlugURL() {
-            var input = document.getElementById('txt-slug-url');
-            var value = input.value;
+        function clearVideo() {
+            var videoPreview = document.getElementById('videoPreview');
+            var wrapper = videoPreview.closest('.image-input');
 
-            value = value.toLowerCase();
-            value = value.replace(/\s+/g, '-');
-
-            value = value.replace(/[^a-z0-9-]/g, '');
-
-            input.value = value;
+            videoPreview.src = '';
+            videoPreview.style.display = 'none';
+            wrapper.classList.add('image-input-empty');
         }
-    </script>
 
-    <script>
         $(document).ready(function () {
             $("form").submit(function (e) {
                 e.preventDefault();
@@ -219,7 +193,7 @@
 
                 let timerInterval;
                 Swal.fire({
-                    title: "Film Oluşturuluyor...",
+                    title: "Film Detayları Güncelleniyor...",
                     html: "Lütfen Bekleyiniz",
                     timerProgressBar: true,
                     allowOutsideClick: false,
@@ -229,12 +203,12 @@
 
                         $.ajax({
                             type: "POST",
-                            url: "/Administration/Movie/CreateMovie",
+                            url: "/Administration/MovieDetail/UpdateDetail",
                             data: formData,
                             processData: false,
                             contentType: false,
                             success: function (response) {
-                                toastr.success("Film Listesine Yönlendiriliyorsunuz...", "Film Oluşturuldu", {
+                                toastr.success("Film Listesine Yönlendiriliyorsunuz...", "Film Detayları Güncellendi", {
                                     "progressBar": true,
                                     "positionClass": "toastr-top-right",
                                     "showDuration": "1000",

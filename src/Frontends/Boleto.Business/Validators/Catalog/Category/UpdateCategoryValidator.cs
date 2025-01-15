@@ -7,7 +7,6 @@ namespace Boleto.Business.Validators.Catalog.Category
     {
         public UpdateCategoryValidator()
         {
-            RuleFor(x => x.CategoryID).NotEmpty().WithMessage("Kategori ID Boş Bırakılamaz");
             RuleFor(x => x.Name).NotEmpty().WithMessage("Kategori Adı Boş Bırakılamaz")
                 .MinimumLength(3).WithMessage("Kategori Adı 3 Karakterden Az Olamaz")
                 .MaximumLength(50).WithMessage("Kategori Adı 50 Karakterden Fazla Olamaz");

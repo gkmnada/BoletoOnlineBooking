@@ -57,7 +57,7 @@ namespace Catalog.Application.Features.MovieDetail.Handlers.CommandHandlers
                     };
                 }
 
-                if (request.ImageURL.Length > 0 && request.VideoURL.Length > 0)
+                if (request.ImageURL != null && request.ImageURL.Length > 0 && request.VideoURL != null && request.VideoURL.Length > 0)
                 {
                     await _fileService.DeleteFileAsync(values.ImageURL);
                     await _fileService.DeleteFileAsync(values.VideoURL);
@@ -68,6 +68,21 @@ namespace Catalog.Application.Features.MovieDetail.Handlers.CommandHandlers
                     var entity = _mapper.Map(request, values);
                     entity.ImageURL = imageURL;
                     entity.VideoURL = videoURL;
+
+                    await _movieDetailRepository.UpdateAsync(values);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    return new BaseResponse
+                    {
+                        IsSuccess = true,
+                        Message = "Movie detail updated successfully"
+                    };
+                }
+                else if (!string.IsNullOrEmpty(request.ExistingImageURL) && !string.IsNullOrEmpty(request.ExistingVideoURL))
+                {
+                    var entity = _mapper.Map(request, values);
+                    entity.ImageURL = request.ExistingImageURL;
+                    entity.VideoURL = request.ExistingVideoURL;
 
                     await _movieDetailRepository.UpdateAsync(values);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
