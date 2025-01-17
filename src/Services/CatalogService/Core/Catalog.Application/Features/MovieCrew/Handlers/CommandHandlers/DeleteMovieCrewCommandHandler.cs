@@ -39,6 +39,7 @@ namespace Catalog.Application.Features.MovieCrew.Handlers.CommandHandlers
 
                 return new BaseResponse
                 {
+                    Data = values.MovieID,
                     IsSuccess = true,
                     Message = "Movie crew deleted successfully"
                 };

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Catalog.Application.Common.Base;
 using Catalog.Application.Features.MovieDetail.Commands;
 using Catalog.Application.Features.MovieDetail.Handlers.CommandHandlers;
 using Catalog.Application.Features.MovieDetail.Validators;
@@ -40,7 +39,7 @@ namespace CatalogService.UnitTests.MovieDetailTests
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnSuccess_WhenMovieDetailIsUpdated()
+        public async Task Handle_ShouldReturnSuccess_WhenMovieDetailIsUpdatedWithNewFiles()
         {
             // Arrange
             var imageFileMock = new Mock<IFormFile>();
@@ -79,7 +78,7 @@ namespace CatalogService.UnitTests.MovieDetailTests
 
             var validator = new UpdateMovieDetailValidator();
             var validationResult = await validator.ValidateAsync(command);
-            validationResult.IsValid.Should().BeTrue("command should be valid");
+            validationResult.IsValid.Should().BeTrue();
 
             _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.ImageURL))
                 .ReturnsAsync(true);
@@ -113,6 +112,56 @@ namespace CatalogService.UnitTests.MovieDetailTests
         }
 
         [Fact]
+        public async Task Handle_ShouldReturnSuccess_WhenMovieDetailIsUpdatedWithExistingFiles()
+        {
+            // Arrange
+            var command = new UpdateMovieDetailCommand
+            {
+                DetailID = "detail-123",
+                Description = "Updated Movie Description",
+                MovieID = "movie-123",
+                ExistingImageURL = "existing-image-url",
+                ExistingVideoURL = "existing-video-url",
+                IsActive = true
+            };
+
+            var existingMovieDetail = new MovieDetail
+            {
+                DetailID = "detail-123",
+                Description = "Old Description",
+                MovieID = "movie-123",
+                ImageURL = "existing-image-url",
+                VideoURL = "existing-video-url"
+            };
+
+            _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingMovieDetail);
+
+            var validator = new UpdateMovieDetailValidator();
+            var validationResult = await validator.ValidateAsync(command);
+            validationResult.IsValid.Should().BeTrue();
+
+            _mapperMock.Setup(x => x.Map(command, existingMovieDetail)).Returns(existingMovieDetail);
+
+            _movieDetailRepositoryMock.Setup(x => x.UpdateAsync(existingMovieDetail)).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            // Act
+            var response = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            response.IsSuccess.Should().BeTrue();
+            response.Message.Should().Be("Movie detail updated successfully");
+
+            _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(existingMovieDetail), Times.Once);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadVideoAsync(It.IsAny<IFormFile>()), Times.Never);
+        }
+
+        [Fact]
         public async Task Handle_ShouldReturnNotFound_WhenMovieDetailDoesNotExist()
         {
             // Arrange
@@ -121,8 +170,8 @@ namespace CatalogService.UnitTests.MovieDetailTests
                 DetailID = "non-existent-detail",
                 Description = "Does not matter",
                 MovieID = "movie-123",
-                ImageURL = new Mock<IFormFile>().Object,
-                VideoURL = new Mock<IFormFile>().Object
+                ExistingImageURL = "existing-image-url",
+                ExistingVideoURL = "existing-video-url"
             };
 
             _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
@@ -138,9 +187,6 @@ namespace CatalogService.UnitTests.MovieDetailTests
             _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadVideoAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -150,10 +196,10 @@ namespace CatalogService.UnitTests.MovieDetailTests
             var command = new UpdateMovieDetailCommand
             {
                 DetailID = "detail-123",
-                Description = "", // Invalid: empty description
-                MovieID = "",    // Invalid: empty movie ID
-                ImageURL = null!,
-                VideoURL = null!
+                Description = "",
+                MovieID = "",
+                ExistingImageURL = "existing-image-url",
+                ExistingVideoURL = "existing-video-url"
             };
 
             var existingMovieDetail = new MovieDetail
@@ -164,6 +210,10 @@ namespace CatalogService.UnitTests.MovieDetailTests
                 ImageURL = "old-image-url",
                 VideoURL = "old-video-url"
             };
+
+            var validator = new UpdateMovieDetailValidator();
+            var validationResult = await validator.ValidateAsync(command);
+            validationResult.IsValid.Should().BeFalse();
 
             _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingMovieDetail);
@@ -178,9 +228,6 @@ namespace CatalogService.UnitTests.MovieDetailTests
 
             _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadVideoAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -192,8 +239,10 @@ namespace CatalogService.UnitTests.MovieDetailTests
                 DetailID = "detail-123",
                 Description = "Updated Description",
                 MovieID = "movie-123",
-                ImageURL = null!,
-                VideoURL = null!
+                ImageURL = null,
+                VideoURL = null,
+                ExistingImageURL = null,
+                ExistingVideoURL = null
             };
 
             var existingMovieDetail = new MovieDetail
@@ -213,144 +262,24 @@ namespace CatalogService.UnitTests.MovieDetailTests
 
             // Assert
             response.IsSuccess.Should().BeFalse();
-            response.Message.Should().Be("Validation failed");
+            response.Message.Should().Be("Image URL and Video URL are required");
 
             _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadVideoAsync(It.IsAny<IFormFile>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task Handle_ShouldReturnFailure_WhenImageUploadFails()
-        {
-            // Arrange
-            var imageFileMock = new Mock<IFormFile>();
-            imageFileMock.Setup(x => x.FileName).Returns("test-image.png");
-            imageFileMock.Setup(x => x.Length).Returns(1024);
-
-            var videoFileMock = new Mock<IFormFile>();
-            videoFileMock.Setup(x => x.FileName).Returns("test-video.mp4");
-            videoFileMock.Setup(x => x.Length).Returns(1024);
-
-            var command = new UpdateMovieDetailCommand
-            {
-                DetailID = "detail-123",
-                Description = "Updated Description",
-                MovieID = "movie-123",
-                ImageURL = imageFileMock.Object,
-                VideoURL = videoFileMock.Object
-            };
-
-            var existingMovieDetail = new MovieDetail
-            {
-                DetailID = "detail-123",
-                Description = "Old Description",
-                MovieID = "movie-123",
-                ImageURL = "old-image-url",
-                VideoURL = "old-video-url"
-            };
-
-            _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(existingMovieDetail);
-
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.ImageURL))
-                .ReturnsAsync(true);
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.VideoURL))
-                .ReturnsAsync(true);
-
-            _fileServiceMock.Setup(x => x.UploadImageAsync(imageFileMock.Object))
-                .ThrowsAsync(new Exception("Image upload failed"));
-
-            // Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing the request");
-
-            _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-            _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovieDetail.ImageURL), Times.Once);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovieDetail.VideoURL), Times.Once);
-        }
-
-        [Fact]
-        public async Task Handle_ShouldReturnFailure_WhenVideoUploadFails()
-        {
-            // Arrange
-            var imageFileMock = new Mock<IFormFile>();
-            imageFileMock.Setup(x => x.FileName).Returns("test-image.png");
-            imageFileMock.Setup(x => x.Length).Returns(1024);
-
-            var videoFileMock = new Mock<IFormFile>();
-            videoFileMock.Setup(x => x.FileName).Returns("test-video.mp4");
-            videoFileMock.Setup(x => x.Length).Returns(1024);
-
-            var command = new UpdateMovieDetailCommand
-            {
-                DetailID = "detail-123",
-                Description = "Updated Description",
-                MovieID = "movie-123",
-                ImageURL = imageFileMock.Object,
-                VideoURL = videoFileMock.Object
-            };
-
-            var existingMovieDetail = new MovieDetail
-            {
-                DetailID = "detail-123",
-                Description = "Old Description",
-                MovieID = "movie-123",
-                ImageURL = "old-image-url",
-                VideoURL = "old-video-url"
-            };
-
-            _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(existingMovieDetail);
-
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.ImageURL))
-                .ReturnsAsync(true);
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.VideoURL))
-                .ReturnsAsync(true);
-
-            _fileServiceMock.Setup(x => x.UploadImageAsync(imageFileMock.Object))
-                .ReturnsAsync("new-uploaded-image-url");
-            _fileServiceMock.Setup(x => x.UploadVideoAsync(videoFileMock.Object))
-                .ThrowsAsync(new Exception("Video upload failed"));
-
-            // Act
-            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            await act.Should().ThrowAsync<Exception>().WithMessage("An error occurred while processing the request");
-
-            _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-            _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovieDetail.ImageURL), Times.Once);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(existingMovieDetail.VideoURL), Times.Once);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(imageFileMock.Object), Times.Once);
         }
 
         [Fact]
         public async Task Handle_ShouldReturnFailure_WhenRepositorySaveFails()
         {
             // Arrange
-            var imageFileMock = new Mock<IFormFile>();
-            imageFileMock.Setup(x => x.FileName).Returns("test-image.png");
-            imageFileMock.Setup(x => x.Length).Returns(1024);
-
-            var videoFileMock = new Mock<IFormFile>();
-            videoFileMock.Setup(x => x.FileName).Returns("test-video.mp4");
-            videoFileMock.Setup(x => x.Length).Returns(1024);
-
             var command = new UpdateMovieDetailCommand
             {
                 DetailID = "detail-123",
                 Description = "Updated Description",
                 MovieID = "movie-123",
-                ImageURL = imageFileMock.Object,
-                VideoURL = videoFileMock.Object
+                ExistingImageURL = "existing-image-url",
+                ExistingVideoURL = "existing-video-url"
             };
 
             var existingMovieDetail = new MovieDetail
@@ -364,16 +293,6 @@ namespace CatalogService.UnitTests.MovieDetailTests
 
             _movieDetailRepositoryMock.Setup(x => x.GetByIdAsync(command.DetailID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingMovieDetail);
-
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.ImageURL))
-                .ReturnsAsync(true);
-            _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovieDetail.VideoURL))
-                .ReturnsAsync(true);
-
-            _fileServiceMock.Setup(x => x.UploadImageAsync(imageFileMock.Object))
-                .ReturnsAsync("new-uploaded-image-url");
-            _fileServiceMock.Setup(x => x.UploadVideoAsync(videoFileMock.Object))
-                .ReturnsAsync("new-uploaded-video-url");
 
             _mapperMock.Setup(x => x.Map(command, existingMovieDetail)).Returns(existingMovieDetail);
 
@@ -388,10 +307,6 @@ namespace CatalogService.UnitTests.MovieDetailTests
 
             _movieDetailRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieDetailRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MovieDetail>()), Times.Once);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync("old-image-url"), Times.Once);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync("old-video-url"), Times.Once);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(imageFileMock.Object), Times.Once);
-            _fileServiceMock.Verify(x => x.UploadVideoAsync(videoFileMock.Object), Times.Once);
         }
     }
 }

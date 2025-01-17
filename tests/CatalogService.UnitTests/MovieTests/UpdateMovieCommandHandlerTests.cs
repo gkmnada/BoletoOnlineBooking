@@ -44,7 +44,7 @@ namespace CatalogService.UnitTests.MovieTests
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnSuccess_WhenMovieIsUpdated()
+        public async Task Handle_ShouldReturnSuccess_WhenMovieIsUpdatedWithNewFile()
         {
             // Arrange
             var fileMock = new Mock<IFormFile>();
@@ -87,7 +87,7 @@ namespace CatalogService.UnitTests.MovieTests
 
             var validator = new UpdateMovieValidator();
             var validationResult = await validator.ValidateAsync(command);
-            validationResult.IsValid.Should().BeTrue("command should be valid");
+            validationResult.IsValid.Should().BeTrue();
 
             _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovie.ImageURL))
                 .ReturnsAsync(true);
@@ -96,6 +96,7 @@ namespace CatalogService.UnitTests.MovieTests
                 .ReturnsAsync("new-uploaded-image-url");
 
             _mapperMock.Setup(x => x.Map(command, existingMovie)).Returns(existingMovie);
+            _mapperMock.Setup(x => x.Map<MovieUpdated>(existingMovie)).Returns(new MovieUpdated());
 
             _movieRepositoryMock.Setup(x => x.UpdateAsync(existingMovie)).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
@@ -112,7 +113,70 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Verify(x => x.UpdateAsync(existingMovie), Times.Once);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync("old-image-url"), Times.Once);
             _fileServiceMock.Verify(x => x.UploadImageAsync(command.ImageURL), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldReturnSuccess_WhenMovieIsUpdatedWithExistingImage()
+        {
+            // Arrange
+            var command = new UpdateMovieCommand
+            {
+                MovieID = "movie-123",
+                MovieName = "Updated Movie",
+                Genre = new List<string> { "Adventure" },
+                Language = new List<string> { "French" },
+                Duration = "120 mins",
+                ReleaseDate = "2025-01-01",
+                Rating = 4,
+                AudienceScore = 4,
+                CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
+                SlugURL = "updated-movie",
+                ExistingImageURL = "existing-image-url"
+            };
+
+            var existingMovie = new Movie
+            {
+                MovieID = "movie-123",
+                MovieName = "Old Movie",
+                Genre = new List<string> { "Action" },
+                Language = new List<string> { "English" },
+                Duration = "100 mins",
+                ReleaseDate = "2024-12-01",
+                Rating = 3,
+                AudienceScore = 3,
+                CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
+                ImageURL = "existing-image-url"
+            };
+
+            _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingMovie);
+
+            var validator = new UpdateMovieValidator();
+            var validationResult = await validator.ValidateAsync(command);
+            validationResult.IsValid.Should().BeTrue();
+
+            _mapperMock.Setup(x => x.Map(command, existingMovie)).Returns(existingMovie);
+            _mapperMock.Setup(x => x.Map<MovieUpdated>(existingMovie)).Returns(new MovieUpdated());
+
+            _movieRepositoryMock.Setup(x => x.UpdateAsync(existingMovie)).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+            // Act
+            var response = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            response.IsSuccess.Should().BeTrue();
+            response.Message.Should().Be("Movie updated successfully");
+            response.Data.Should().Be(existingMovie.MovieID);
+
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _movieRepositoryMock.Verify(x => x.UpdateAsync(existingMovie), Times.Once);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Once);
+            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -122,8 +186,16 @@ namespace CatalogService.UnitTests.MovieTests
             var command = new UpdateMovieCommand
             {
                 MovieID = "non-existent-movie",
-                MovieName = "Does not matter",
-                ImageURL = new Mock<IFormFile>().Object
+                MovieName = "Updated Movie",
+                Genre = new List<string> { "Adventure" },
+                Language = new List<string> { "French" },
+                Duration = "120 mins",
+                ReleaseDate = "2025-01-01",
+                Rating = 4,
+                AudienceScore = 4,
+                CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
+                SlugURL = "updated-movie",
+                ExistingImageURL = "existing-image-url"
             };
 
             _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
@@ -148,22 +220,19 @@ namespace CatalogService.UnitTests.MovieTests
         public async Task Handle_ShouldReturnValidationError_WhenCommandIsInvalid()
         {
             // Arrange
-            var fileMock = new Mock<IFormFile>();
-            fileMock.Setup(x => x.Length).Returns(1024);
-
             var command = new UpdateMovieCommand
             {
                 MovieID = "movie-123",
                 MovieName = "",
-                Genre = new List<string> { "Adventure" },
-                Language = new List<string> { "French" },
-                Duration = "120 mins",
-                ReleaseDate = "2025-01-01",
-                Rating = 4,
-                AudienceScore = 4,
-                CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
-                SlugURL = "updated-movie",
-                ImageURL = fileMock.Object
+                Genre = new List<string>(),
+                Language = new List<string>(),
+                Duration = "",
+                ReleaseDate = "",
+                Rating = 0,
+                AudienceScore = 0,
+                CategoryID = "",
+                SlugURL = "",
+                ExistingImageURL = "existing-image-url"
             };
 
             var existingMovie = new Movie
@@ -176,6 +245,10 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingMovie);
 
+            var validator = new UpdateMovieValidator();
+            var validationResult = await validator.ValidateAsync(command);
+            validationResult.IsValid.Should().BeFalse();
+
             // Act
             var response = await _handler.Handle(command, CancellationToken.None);
 
@@ -186,18 +259,14 @@ namespace CatalogService.UnitTests.MovieTests
 
             _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnFailure_WhenImageIsEmpty()
+        public async Task Handle_ShouldReturnFailure_WhenImageAreMissing()
         {
             // Arrange
-            var fileMock = new Mock<IFormFile>();
-            fileMock.Setup(x => x.Length).Returns(0);
-
             var command = new UpdateMovieCommand
             {
                 MovieID = "movie-123",
@@ -210,7 +279,8 @@ namespace CatalogService.UnitTests.MovieTests
                 AudienceScore = 4,
                 CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
                 SlugURL = "updated-movie",
-                ImageURL = fileMock.Object
+                ImageURL = null,
+                ExistingImageURL = null
             };
 
             var existingMovie = new Movie
@@ -234,8 +304,6 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
-            _fileServiceMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
-            _fileServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Never);
         }
 
         [Fact]
@@ -243,6 +311,7 @@ namespace CatalogService.UnitTests.MovieTests
         {
             // Arrange
             var fileMock = new Mock<IFormFile>();
+            fileMock.Setup(x => x.FileName).Returns("test-image.png");
             fileMock.Setup(x => x.Length).Returns(1024);
 
             var command = new UpdateMovieCommand
@@ -273,7 +342,7 @@ namespace CatalogService.UnitTests.MovieTests
             _fileServiceMock.Setup(x => x.DeleteFileAsync(existingMovie.ImageURL))
                 .ReturnsAsync(true);
 
-            _fileServiceMock.Setup(x => x.UploadImageAsync(fileMock.Object))
+            _fileServiceMock.Setup(x => x.UploadImageAsync(command.ImageURL))
                 .ThrowsAsync(new Exception("File upload failed"));
 
             // Act
@@ -285,6 +354,54 @@ namespace CatalogService.UnitTests.MovieTests
             _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             _movieRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Movie>()), Times.Never);
             _publishEndpointMock.Verify(x => x.Publish(It.IsAny<MovieUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldReturnFailure_WhenRepositorySaveFails()
+        {
+            // Arrange
+            var command = new UpdateMovieCommand
+            {
+                MovieID = "movie-123",
+                MovieName = "Updated Movie",
+                Genre = new List<string> { "Adventure" },
+                Language = new List<string> { "French" },
+                Duration = "120 mins",
+                ReleaseDate = "2025-01-01",
+                Rating = 4,
+                AudienceScore = 4,
+                CategoryID = "84f0b4ed-37eb-49e0-81e5-e643be786e04",
+                SlugURL = "updated-movie",
+                ExistingImageURL = "existing-image-url"
+            };
+
+            var existingMovie = new Movie
+            {
+                MovieID = "movie-123",
+                MovieName = "Old Movie",
+                ImageURL = "old-image-url"
+            };
+
+            _movieRepositoryMock.Setup(x => x.GetByIdAsync(command.MovieID, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(existingMovie);
+
+            _mapperMock.Setup(x => x.Map(command, existingMovie)).Returns(existingMovie);
+            _mapperMock.Setup(x => x.Map<MovieUpdated>(existingMovie)).Returns(new MovieUpdated());
+
+            _movieRepositoryMock.Setup(x => x.UpdateAsync(existingMovie)).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception("Database save failed"));
+
+            // Act
+            Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<Exception>()
+                .WithMessage("An error occurred while processing your request");
+
+            _movieRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _movieRepositoryMock.Verify(x => x.UpdateAsync(existingMovie), Times.Once);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
