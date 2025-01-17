@@ -49,7 +49,6 @@ namespace Catalog.Application.Mappings
             CreateMap<MovieDetail, GetMovieDetailByIdQueryResult>().ReverseMap();
 
             // MovieCast mappings
-            CreateMap<MovieCast, CreateMovieCastCommand>().ReverseMap();
             CreateMap<MovieCast, UpdateMovieCastCommand>().ReverseMap();
             CreateMap<MovieCast, GetMovieCastsQueryResult>().ReverseMap();
             CreateMap<MovieCast, GetMovieCastByIdQueryResult>().ReverseMap();

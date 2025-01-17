@@ -8,7 +8,7 @@
 <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
     <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Film Listesi</h1>
+            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Detay Güncelle</h1>
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                 <li class="breadcrumb-item text-muted">
                     <a class="text-muted text-hover-primary">Katalog</a>
@@ -148,8 +148,8 @@
                 <input type="hidden" value="@Model.MovieDetailResponse.MovieID" asp-for="UpdateMovieDetailRequest.MovieID" />
 
                 <div class="d-flex justify-content-end">
-                    <a href="/Administration/MovieDetail/DeleteDetail/@Model.MovieDetailResponse.DetailID" class="btn btn-danger me-5">Sil</a>
                     <a asp-controller="Movie" asp-action="Index" asp-area="Administration" class="btn btn-light me-5">İptal Et</a>
+                    <a href="/Administration/MovieDetail/DeleteDetail/@Model.MovieDetailResponse.DetailID" class="btn btn-danger me-5">Sil</a>
                     <button type="submit" class="btn btn-primary">
                         <span class="indicator-label">Güncelle</span>
                     </button>

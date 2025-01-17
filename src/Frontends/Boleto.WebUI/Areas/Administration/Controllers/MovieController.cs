@@ -92,6 +92,7 @@ namespace Boleto.WebUI.Areas.Administration.Controllers
         public async Task<IActionResult> DeleteMovie(string id)
         {
             await _movieService.DeleteMovieAsync(id);
+            Task.Delay(1000).Wait();
             return RedirectToAction("Index", "Movie", new { area = "Administration" });
         }
     }

@@ -21,7 +21,9 @@ namespace Boleto.Business.Validators.Catalog.MovieDetail
                     context.AddFailure("VideoURL", "Film Fragmanı Seçiniz");
                 }
             });
-            RuleFor(x => x.Description).NotEmpty().WithMessage("Açıklama Boş Bırakılamaz");
+            RuleFor(x => x.Description).NotEmpty().WithMessage("Açıklama Boş Bırakılamaz")
+                .MinimumLength(3).WithMessage("Açıklama 3 Karakterden Az Olamaz")
+                .MaximumLength(250).WithMessage("Açıklama 250 Karakterden Fazla Olamaz");
         }
     }
 }

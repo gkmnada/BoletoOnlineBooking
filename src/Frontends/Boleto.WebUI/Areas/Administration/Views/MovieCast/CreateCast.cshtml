@@ -1,0 +1,241 @@
+﻿@model CreateMovieCastRequest
+
+@{
+    ViewData["Title"] = "CreateCast";
+    Layout = "~/Areas/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Oyuncu Oluştur</h1>
+            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                <li class="breadcrumb-item text-muted">
+                    <a class="text-muted text-hover-primary">Katalog</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Filmler</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Film Listesi</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Oyuncular</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Oyuncu Oluştur</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <form method="post">
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
+                    <div class="card">
+                        <div class="card-body p-12">
+                            <div class="mb-0">
+                                <div class="table-responsive mb-10">
+                                    <table class="table g-5 gs-0 mb-0 fw-bold text-gray-700" data-kt-element="items">
+                                        <thead>
+                                            <tr class="border-bottom fs-7 fw-bold text-gray-700 text-uppercase">
+                                                <th class="min-w-100px w-100px">Oyuncu Adı</th>
+                                                <th class="min-w-100px w-100px">Karakter Adı</th>
+                                                <th class="min-w-100px w-100px">Oyuncu Fotoğrafı</th>
+                                                <th class="min-w-75px w-75px text-end">İşlem</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="border-top border-top-dashed align-top fs-6 fw-bold text-gray-700">
+                                                <th class="text-primary">
+                                                    <button type="button" class="btn btn-link py-1" data-kt-element="add-item">Satır Ekle</button>
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <table class="table d-none" data-kt-element="item-template">
+                                    <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                        <td class="pe-7">
+                                            <input type="hidden" value="@ViewBag.MovieID" name="MovieID" />
+                                            <input type="text" class="form-control form-control-solid mb-2" name="name[]" placeholder="Oyuncu Adı" oninput="formatInput(this)" />
+                                        </td>
+                                        <td class="ps-0">
+                                            <input type="text" class="form-control form-control-solid" name="character[]" placeholder="Karakter Adı" oninput="formatInput(this)" />
+                                        </td>
+                                        <td class="ps-0">
+                                            <input type="text" class="form-control form-control-solid" name="image[]" placeholder="Oyuncu Fotoğrafı" />
+                                        </td>
+                                        <td class="pt-5 text-end">
+                                            <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-kt-element="remove-item">
+                                                <i class="ki-duotone ki-trash fs-3">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                    <span class="path4"></span>
+                                                    <span class="path5"></span>
+                                                </i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table d-none" data-kt-element="empty-template">
+                                    <tr data-kt-element="empty">
+                                        <th colspan="5" class="text-muted text-center py-10"></th>
+                                    </tr>
+                                </table>
+                                <div class="separator separator-dashed my-10"></div>
+                                <div class="text-end mt-5">
+                                    <a href="/Administration/MovieCast/Index/@ViewBag.MovieID" class="btn btn-light me-5">İptal Et</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <span class="indicator-label">Oluştur</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // Add Row Button
+        document.querySelector('[data-kt-element="add-item"]').addEventListener('click', function () {
+            var template = document.querySelector('[data-kt-element="item-template"]').innerHTML;
+            var itemsContainer = document.querySelector('[data-kt-element="items"]');
+
+            itemsContainer.insertAdjacentHTML('beforeend', template);
+        });
+
+        // Delete Row Button
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.closest('[data-kt-element="remove-item"]')) {
+                e.target.closest('[data-kt-element="item"]').remove();
+            }
+        });
+
+        // Format Input
+        function formatInput(input) {
+            var words = input.value.split(' ');
+
+            for (var i = 0; i < words.length; i++) {
+                var word = words[i];
+                if (word.length > 0) {
+                    words[i] = word.charAt(0).toUpperCase() + word.slice(1);
+                }
+            }
+
+            input.value = words.join(' ');
+        }
+
+        $(document).ready(function () {
+            $("form").submit(function (e) {
+                e.preventDefault();
+
+                var movieCasts = [];
+                var movieID = $("input[name='MovieID']").val();
+
+                $("tr[data-kt-element='item']").each(function () {
+                    var row = $(this);
+
+                    var castName = row.find("input[name='name[]']").val();
+                    var character = row.find("input[name='character[]']").val();
+                    var image = row.find("input[name='image[]']").val();
+                    var movieID = row.find("input[name='MovieID']").val();
+
+                    if (castName && character && image) {
+                        var cast = {
+                            CastName: castName,
+                            Character: character,
+                            ImageURL: image,
+                            MovieID: movieID
+                        };
+                        movieCasts.push(cast);
+                    }
+                });
+
+                let timerInterval;
+                Swal.fire({
+                    title: "Oyuncular Ekleniyor...",
+                    html: "Lütfen Bekleyiniz",
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Administration/MovieCast/CreateCast",
+                            data: { MovieCasts: movieCasts },
+                            success: function (response) {
+                                toastr.success("", "Oyuncular Eklendi", {
+                                    "progressBar": true,
+                                    "positionClass": "toastr-top-right",
+                                    "showDuration": "1000",
+                                    "hideDuration": "1000",
+                                    "timeOut": "1500",
+                                    "extendedTimeOut": "1000",
+                                });
+
+                                setTimeout(function () {
+                                    window.location.href = "/Administration/MovieCast/Index/" + movieID;
+                                }, 1500);
+                            },
+                            error: function (xhr) {
+                                var errors = xhr.responseJSON && xhr.responseJSON.error;
+
+                                if (!errors) {
+                                    var errorMessage = "Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.";
+                                    toastr.error("", errorMessage, {
+                                        "positionClass": "toastr-top-right",
+                                        "showDuration": "1000",
+                                        "hideDuration": "1000",
+                                        "timeOut": "2000",
+                                        "extendedTimeOut": "1000"
+                                    });
+                                } else {
+                                    showValidationErrors(errors);
+                                }
+                            },
+                            complete: function () {
+                                clearInterval(timerInterval);
+                                Swal.close();
+                            }
+                        });
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                });
+            });
+
+            // Show Validation Errors
+            function showValidationErrors(errors) {
+                if (Array.isArray(errors) && errors.length > 0) {
+                    errors.forEach((error) => {
+                        toastr.error("", error, {
+                            "positionClass": "toastr-top-right",
+                            "showDuration": "1000",
+                            "hideDuration": "1000",
+                            "timeOut": "2000",
+                            "extendedTimeOut": "1000"
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+}

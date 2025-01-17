@@ -43,15 +43,25 @@ namespace Catalog.Application.Features.MovieCast.Handlers.CommandHandlers
                     };
                 }
 
-                var entity = _mapper.Map<Domain.Entities.MovieCast>(request);
+                foreach (var item in request.MovieCasts)
+                {
+                    var entity = new Domain.Entities.MovieCast
+                    {
+                        CastName = item.CastName,
+                        Character = item.Character,
+                        ImageURL = item.ImageURL,
+                        MovieID = item.MovieID
+                    };
 
-                await _movieCastRepository.CreateAsync(entity);
+                    await _movieCastRepository.CreateAsync(entity);
+                }
+
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return new BaseResponse
                 {
                     IsSuccess = true,
-                    Message = "Movie cast created successfully",
+                    Message = "Movie casts created successfully",
                 };
             }
             catch (Exception ex)

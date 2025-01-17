@@ -39,6 +39,7 @@ namespace Catalog.Application.Features.MovieCast.Handlers.CommandHandlers
 
                 return new BaseResponse
                 {
+                    Data = values.MovieID,
                     IsSuccess = true,
                     Message = "Movie cast deleted successfully"
                 };

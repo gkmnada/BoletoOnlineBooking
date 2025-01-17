@@ -82,6 +82,7 @@ namespace Boleto.WebUI.Areas.Administration.Controllers
         public async Task<IActionResult> DeleteCategory(string id)
         {
             await _categoryService.DeleteCategoryAsync(id);
+            Task.Delay(1000).Wait();
             return RedirectToAction("Index", "Category", new { area = "Administration" });
         }
     }
